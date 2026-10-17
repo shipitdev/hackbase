@@ -179,6 +179,10 @@ class Copilot:
                         entity_ids.append(value)
         for conflict in draft.conflicts:
             refs.extend(conflict.evidence_refs)
+        # Resolve sources named in prose/caveats even if the model omits its reference list.
+        claims = _json([draft.answer, draft.limitations, [c.claim for c in draft.conflicts]])
+        refs.extend(re.findall(r"\b(?:INS|MNT|REG|CTX)-(?:[A-Z0-9]+-)*[A-Z0-9]+\b", claims))
+        refs.extend(re.findall(r"\b(?:OM-T\d+|SOP-[A-Z]+)(?:#\d+(?:\.\d+)*)?\b", claims))
         # Result provenance also supports a short numeric answer without a visual.
         if not refs:
             refs.extend(result_ids)

@@ -163,3 +163,12 @@ def test_generic_endpoint_keeps_legacy_max_tokens(monkeypatch):
     provider.complete([], [], max_tokens=128)
     assert b'"max_tokens":128' in seen[0].content
     assert b'"max_completion_tokens"' not in seen[0].content
+
+
+@pytest.mark.parametrize(('failure','message'),[(httpx.ConnectError,'Could not connect'),(httpx.ReadError,'transport failed')])
+def test_transport_failures_are_distinct_and_do_not_echo_secrets(failure,message):
+    def fail(request):raise failure('private-key private-response',request=request)
+    provider=CompatibleProvider('model','https://example.test/v1','private-key',transport=httpx.MockTransport(fail))
+    with pytest.raises(AppError) as caught:provider.complete([],[])
+    assert message in str(caught.value)
+    assert 'private-' not in str(caught.value)

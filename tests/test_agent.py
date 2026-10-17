@@ -153,3 +153,18 @@ def test_router_served_models_are_saved_for_each_model_round():
     answer=Copilot(Knowledge(),Memory(),model).answer({'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-17'},'Status?')
     assert answer['model']=='inference-router'
     assert answer['served_models']==['selected-model','selected-model']
+
+
+def test_source_named_in_caveat_is_resolved_even_when_omitted_from_ref_list():
+    class Notes(Knowledge):
+        def get_shared_evidence(self,refs):
+            if refs==['CTX-0001-002']:
+                return [{'id':'CTX-0001-002','kind':'context','content':'Operator observation'}]
+            return super().get_shared_evidence(refs)
+    class NoteBatch(Notes):
+        def get_shared_evidence(self,refs):
+            return [item for ref in refs for item in super(NoteBatch,self).get_shared_evidence([ref])]
+    provider=Scripted([tool('run_sql',{'sql':'SELECT * FROM effective_inspections'}),final(limitations=['Context from CTX-0001-002 is an operator observation.'])])
+    answer=Copilot(NoteBatch(),Memory(),provider).answer({'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-17'},'Status?')
+    assert 'CTX-0001-002' in {citation['id'] for citation in answer['citations']}
+    assert answer['status']=='partial'

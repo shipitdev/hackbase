@@ -88,5 +88,9 @@ class CompatibleProvider:
             else:
                 hint = " Check provider credits/rate limits." if code in {402, 429} else " Check the configured model and credentials."
             raise AppError("provider_error", f"Model provider returned HTTP {code}.{hint}", 502) from exc
-        except (httpx.RequestError, ValueError, KeyError, IndexError, TypeError) as exc:
-            raise AppError("provider_error", "Model provider returned an invalid response or could not be reached.", 502) from exc
+        except httpx.ConnectError as exc:
+            raise AppError("provider_error", "Could not connect to the model provider; check DNS, TLS certificates, and network access.", 502) from exc
+        except httpx.RequestError as exc:
+            raise AppError("provider_error", "Model provider transport failed before a complete response was received.", 502) from exc
+        except (ValueError, KeyError, IndexError, TypeError) as exc:
+            raise AppError("provider_error", "Model provider returned an invalid response format.", 502) from exc
