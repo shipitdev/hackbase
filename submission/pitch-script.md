@@ -1,6 +1,6 @@
 # Video pitch script — under five minutes
 
-Read the quoted paragraphs. The bracketed lines are recording directions. **Latest rehearsal evidence:** after the validation fix, the exact Q9-2 prompt returned Nathan Pierce and150wells with3citations in37.8seconds. It retained explicit limitations; the full suite has not been rerun. Rehearse before recording. The final evaluation is complete; the figures below describe observed responses, not an accuracy pass rate.
+Read the quoted paragraphs. The bracketed lines are recording directions. **Latest rehearsal evidence:** after the validation fix, the exact Q9-2 prompt returned Nathan Pierce and 150 wells with 3 citations in 37.8 seconds. It retained explicit limitations; the full suite has not been rerun. Rehearse before recording. The final evaluation is complete; the figures below describe observed responses, not an accuracy pass rate.
 
 ## 0:00–1:20 — Design
 
@@ -30,23 +30,23 @@ Read the quoted paragraphs. The bracketed lines are recording directions. **Late
 
 [Submit once. Show the actual answer and a citation. Identical wording and successful delivery are not guaranteed. Do not add an untested table instruction.]
 
-**Backup — final Q2, exact wording; Robert Hayes, fresh chat:**
+**Backup — final Q1, exact wording; Michael Turner, fresh chat:**
 
-> Which well produced the most oil in 2026?
+> All our wells feed one reservoir. Map the reservoir pressure across the field from the pressure data.
 
-**Observed final-test behavior:** It explained that oil volume is not measured, so it could not identify a winner by barrels. It also generated a clearly labelled table of an inspection-based activity proxy: the first10 of52 wells tied at53/53 producing inspections. The proxy is not oil volume. Exact proxy numbers have not been independently recomputed for this recording.
+**Observed E4 behavior:** It refused to invent a map because calibrated pressure measurements are absent, with cited source checks. Engineering pressure limits and separator alarms are not reservoir-pressure measurements.
 
-“This second final-test question shows an important limit. The data does not contain measured oil volumes. The evaluated answer said that clearly rather than inventing a largest producer. It also showed an inspection-based comparison, labelled as a proxy rather than barrels.”
+“This backup final-test question shows a data boundary. The system explains that reservoir pressure was not measured instead of inventing a map.”
 
-[Show the response, its qualifications and any generated table. Do not claim a live success if it times out. If both calls fail, show that outcome and move to the honest evaluation summary.]
+[Show the actual response and its source evidence. If it fails, show that failure and proceed to the results.]
 
-## 3:35–4:20 — Results and limits
+## 3:35–4:20 — Latest results and limits
 
-“We ran all 11 final questions, including their follow-ups: 21 turns in order. Sixteen returned partial responses and five timed out. A partial response did not necessarily contain a useful answer, so I’m not calling those sixteen successes.
+“We reran all 11 final questions and follow-ups:21 turns in order. Twelve returned partial responses and nine returned provider errors. No call timed out in this run, but most partials did not contain usable answers.
 
-“Two turns had supported key conclusions: the system correctly said oil volume was not measured, and it correctly identified Northwest Production’s lead and its 150 wells. Most complex questions did not produce enough evidence to assess. The main failures were context and answer-validation limits, plus provider timeouts.
+“Two turns returned source-supported answers: the reservoir-pressure refusal and the team-lead question. The other 19could not be verified. That is two supported answers out of 21 attempts, not a general accuracy percentage.
 
-“After that first run, I increased the time budgets and fixed the final-answer repair path. One fresh check of the team question returned the correct lead and count with evidence in about38seconds. I have not rerun the whole evaluation. The next step is to improve retrieval and rerun the affected cases. The data and display boundaries are implemented, but this final evaluation shows that the reasoning flow still needs work.”
+“The remaining blockers were context growth and provider compatibility at the final-answer stage. The write-up includes the failures, and the saved answer bundle preserves every turn. The next step is to verify the provider compatibility repair, reduce repeated context, and rerun the affected cases.”
 
 ## Before recording
 

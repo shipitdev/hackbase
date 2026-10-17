@@ -16,3 +16,6 @@ dist/
 .agents/
 .taste-skill/
 .playwright-mcp/
+
+# Local upload bundles contain evaluation responses, not source artifacts.
+submission/*.zip

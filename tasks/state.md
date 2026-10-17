@@ -73,3 +73,12 @@ video_demo owns submission/asset-intelligence-writeup.docx/.pdf, scripts/build_w
 R3codeaccepted/ownershipreturned: root60tests pass, backendPID36226 exec18716 restarted. SinglefreshQ9-2 paidcheckauthorizedinvalidation-fix outputfolder; no fullrerun. W1writeupcontinuesindependently.
 
 R3targetedlivecheckdone: exactQ9-2returnedNathanPierce/150with3citations in37.759s, partialwithexplicitlimitations. InitialJSONdraftinvalid; finalrepairrecovered, safeprivate tracecaptured. No remainingvalidationerroronthatturn; notfullsuiterun. W1workerinformedtoincludeasclearlyseparatelatercheck. Drivebrowseruploadblockedbypermissiondecline; noalternate-routeupload.
+
+## E4 fresh full rerun authorized
+Userrequestsallfinalevalsagainandnewoutputs/accuracyinlocal2pagedoc. final_evalownsNEWtasks/reports/E4-final-rerun.md+ignoreddata/evaluations/final-rerun/. All11/21once, inordersharedisolatedmemory, currentR3+90/240settings; noautopaidretry. W1workerfinisheslayout/buildernow; finaldocmustbeupdatedafterE4beforepresentedasfinal. Userwilluploadlocallysavedfiles; noDriveaccessattempts.
+
+## E4 completed and packaging
+All21turnscomplete:12HTTP200partial,9HTTP502upstream400,0HTTP504. Tenpartialscontext-limited; onlyQ1refusal/Q9-2Nathan150useful+source-supported. No suiteaccuracy% claimed (2/21verifiedcoverageisnotgeneralaccuracy). E4reporttasks/reports/E4-final-rerun.md; fullanswersexportedignoreddata/submission/final-rerun/. W1workerupdatingfinal2pagePDF/DOCXnow. FinalZIPmustexcludekeys/DBs/private traces andwillincludePDF,DOCX,fullanswersHTML/JSON,report,diagram/script/README; videonotrecorded/notincluded.
+
+## Local submission bundle ready
+AcceptedW1E4refresh: submission/asset-intelligence-writeup.pdf exactly2pages, bothpagesrootvisuallychecked, DOCXcompanionfullfigure/sanitizerchecked. LocalignoredZIPsubmission/flytbase-submission.zip:30files/21answercaptures, PDF/DOCX+report+sourcechecks+diagram/script+README. Integrityandkeyexclusionspass; novideo/DBs/privatetraces. UserwilluploadmanualDrive. R4workerownsprovider/agent/testsforboundedtool-choicecompatibilityrepair; nofurtherpaidcalls. FullE4resultsremainimmutable.

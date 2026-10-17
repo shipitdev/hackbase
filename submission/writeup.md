@@ -24,3 +24,6 @@ See tasks/reports/E1-reviewed-results.md for the sample18-question evaluation. I
 - Add the repository's license after confirming the intended license.
 - Export a readable 2–3 page write-up and record a narrated demo of at most5minutes.
 - Verify repository, video and write-up links; submit only with user authorization.
+
+## Latest E4 rerun
+All21turns recaptured with R3code:12HTTP200partial,9upstreamHTTP400errors surfacedas502, no504. Tenpartialscontext-limited; onlyQ1refusal/Q9-2teamfacts supported,19unverifiable. The two-page PDF and full local answer bundle are authoritative submission artifacts. Possible final-synthesis provider compatibility issue is being repaired separately; no post-E4accuracyclaim.
