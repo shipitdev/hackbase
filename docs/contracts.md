@@ -78,7 +78,7 @@ Large output can be paged; a preview is never an aggregate’s input. Large resu
 
 ## Tool boundary
 
-`run_sql(sql, params)` returns the saved-result shape/reference plus a bounded preview. Only approved corrected views/lookups are queryable. `get_evidence(refs)` opens known shared source IDs/sections or owned result/private-message evidence. `search_documents(query, filters)` returns shared source IDs and excerpts, with clear search/coverage limits.
+`run_sql(sql, params)` returns the saved-result shape/reference plus a bounded preview. Only approved corrected views/lookups are queryable. `get_evidence(refs, offset=0, limit=3000)` opens known shared source IDs/sections or owned result/private-message evidence. Optional character paging bounds prompt previews (limit1–6000); next_offset marks the next visible character. Repeated explicit reads work. Citation hydration still resolves full sources, independently of preview paging. `search_documents(query, filters)` returns shared source IDs and excerpts, with clear search/coverage limits.
 
 `memory_read(query)` and `remember(kind, payload)` receive user/thread context from server code, never a model-supplied user ID. `remember` accepts `shared_claim`, `field_override` or `rule_override` and validates target, type, scope, dates and reason. It returns a persistent ID, acceptance state, affected target and any visible disagreement. Deduplicate by user/request and semantic change target across retries, independent of provider tool-call IDs.
 
@@ -143,3 +143,5 @@ Extend the same static OpenUI library (max six views) with:
 - `ResultHeatmap(resultId, title, x, y, value)` → `{x,y,value}`; zero is explicit, missing combinations remain unknown.
 
 All arguments reference literal issued result IDs and existing columns. Keep Card/Table signatures unchanged. Node bridge returns the same internal `{type,result_id,title,mapping}` descriptors for all six; no model-authored row arrays. Parser enforces structure/references; Python validates full saved data numeric types, finite numbers, boolean markers, coordinate ranges and completeness. It passes only column names and capped dummy rows to the parser to avoid copying large result values. Widgets render only trusted server-owned rows and expose accessible supporting tables. No arbitrary URLs or executable code from the model.
+
+Runtime context previews are bounded and repeated search excerpts deduplicated. At72,000 serialized message characters, completed tool-call/reply groups compact into reference catalogs while retaining the current request and repair/control notes. Saved full rows, source text, provenance, completeness and ownership checks remain authoritative; the hard96,000-character cap is unchanged.

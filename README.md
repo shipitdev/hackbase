@@ -72,7 +72,7 @@ The final questions are in the official dataset's `test-data/final-questions.md`
 
 The [E4 report](tasks/reports/E4-final-rerun.md) records the outputs, limitations and usage lower bound. [Independent source checks](tasks/reports/E4-source-oracles.md) provide reference results; they are not copilot answers. Earlier runs remain separate.
 
-After E4, the provider request was changed to retain tool definitions while using `tool_choice: none` for final synthesis. That repair has offline test evidence, not a post-fix full-suite score. Runtime context reduction is being reviewed separately; the E4 results must not be presented as a test of unmeasured later changes. Increasing timeouts does not solve context growth. No automatic provider retries or model fallbacks are enabled. The development proxy waits up to 300 seconds.
+After E4, the provider request was changed to retain tool definitions while using `tool_choice: none` for final synthesis. That repair has offline test evidence, not a post-fix full-suite score. A later context repair bounds tool previews, deduplicates search excerpts, supports evidence paging, and compacts older tool cycles at72,000 characters while keeping saved results and source references. It has focused offline replay evidence; the E4 results must not be presented as a test of these later changes. Increasing timeouts does not solve context growth. No automatic provider retries or model fallbacks are enabled. The development proxy waits up to 300 seconds.
 
 ## Checks
 

@@ -1,6 +1,6 @@
 # Orchestrator state
 
-Updated 17 October 2026. **Final dataset activated; Luna high running the 11 final scenarios / 21 turns.**
+Updated 17 October 2026. **E4 evaluation and local submission bundle complete; R5 runtime context repair active.**
 
 ## Stable decisions
 
@@ -84,3 +84,10 @@ All21turnscomplete:12HTTP200partial,9HTTP502upstream400,0HTTP504. Tenpartialscon
 AcceptedW1E4refresh: submission/asset-intelligence-writeup.pdf exactly2pages, bothpagesrootvisuallychecked, DOCXcompanionfullfigure/sanitizerchecked. LocalignoredZIPsubmission/flytbase-submission.zip:30files/21answercaptures, PDF/DOCX+report+sourcechecks+diagram/script+README. Integrityandkeyexclusionspass; novideo/DBs/privatetraces. UserwilluploadmanualDrive. R4workerownsprovider/agent/testsforboundedtool-choicecompatibilityrepair; nofurtherpaidcalls. FullE4resultsremainimmutable.
 
 R4compatibilityaccepted: providerkeepsdefinitions+tool_choice:none insynthesis; root61focusedtestspass, restartedafterconfirmingnopendingliverequests. No postR4paidcheck, E4scoresunchanged. Allworkerownershipreturned. FinalZIPincludesversionnoteandR4report; videoandportal/Driveuploadremainuseractions.
+
+## R5 context repair active
+context_fix Luna high owns app/agent.py, app/store.py, tests/test_agent.py, tests/test_store.py, tests/test_context_budget.py, tasks/reports/R5-context-fix.md. Userauthorizedcontextfix. Shrink/dedupeprompttoolpreviews, proactiveboundedcompactionpreservingreferences/protocol/evidence/privateaccess. Keepfullsavedrows andexisting96kcap/8rounds/R4tool-choice contract; nopaidcalls. RootreviewsbeforetargetedLunaQ4check, nofullsuiteautomaticrerun. ExistingPDF/ZIPreportE4andarenotnewfixscores.
+
+R5reviewrequestedbeforeactivation: explicitget_evidence re-read/pagingmustaccesspost-previewtextandmustnottruncatefinalcitationhydration; wideSQLpreviewmustretainstructuredresultmetadata ratherthanencodedprefix. RootauthorizedoptionalEvidenceArgsoffset/limitforpromptpreviewonly. Workeraddingtestswithrealistic37kbase andaccuratepagingoffsets. NoR5paidcallorbackendactivationyet.
+
+R5acceptedandactivated: onlyapp/agent.py +newtests, no store/memorydatachanges. OptionalEvidenceArgs pagingpreviewonly; dedupsearch/boundedSQLmetadata/proactive72kcompaction. Rootfixedfullnestedbody/limitations/claimmetadata preservation;75focusedtests pass. BackendPID39673exec63811 active; targetedLunaQ4once authorized andrunning. READMEc231ef8pushed; R5GitHubsyncnext. E4PDF/ZIPscoresstillunchanged.
