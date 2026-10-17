@@ -91,3 +91,6 @@ context_fix Luna high owns app/agent.py, app/store.py, tests/test_agent.py, test
 R5reviewrequestedbeforeactivation: explicitget_evidence re-read/pagingmustaccesspost-previewtextandmustnottruncatefinalcitationhydration; wideSQLpreviewmustretainstructuredresultmetadata ratherthanencodedprefix. RootauthorizedoptionalEvidenceArgsoffset/limitforpromptpreviewonly. Workeraddingtestswithrealistic37kbase andaccuratepagingoffsets. NoR5paidcallorbackendactivationyet.
 
 R5acceptedandactivated: onlyapp/agent.py +newtests, no store/memorydatachanges. OptionalEvidenceArgs pagingpreviewonly; dedupsearch/boundedSQLmetadata/proactive72kcompaction. Rootfixedfullnestedbody/limitations/claimmetadata preservation;75focusedtests pass. BackendPID39673exec63811 active; targetedLunaQ4once authorized andrunning. READMEc231ef8pushed; R5GitHubsyncnext. E4PDF/ZIPscoresstillunchanged.
+
+## R5 targeted outcome
+OneQ4callreturned200partialin180.653s,8modelcalls,134706recordedtokens. No contextcap/timeout, buttwofinaldraftsfailedJSONvalidation andnouitable/citations/resultsreturned. Notapass; no furtherpaidcalls queued. FullE4scoresunchanged. READMEandZIPaddendumwillrecordthisbeforefinalpush.

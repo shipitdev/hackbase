@@ -11,3 +11,7 @@ The evaluation report summarizes the latest full run. final-answers.html and ans
 The narrated video is NOT included: record and upload it separately, at most five minutes. Final submission through the event portal remains your action.
 
 Version note: E4 was captured before the final R4 tool-choice compatibility repair. That later repair passed61 focused offline tests but has not had a paid live retest. Its existence does not change the reported E4 outcomes.
+
+Post-E4 context note: bounded previews and compaction passed 75 focused offline checks. One later Q4 attempt returned without a context-limit failure or timeout but failed final JSON validation and produced no table. See the separate post-fix report; this does not change the E4 counts in the two-page write-up. No more paid retries were made.
+
+Repository requirement: the event asks for an open-source license. This repository currently has no LICENSE file; choose and add a license before final submission.
