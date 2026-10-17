@@ -1,0 +1,57 @@
+# Orchestrator state
+
+Updated: 17 October 2026. **Stage: backend implemented and reviewed; frontend and live-provider acceptance pending.**
+
+## User direction
+
+User constraint: workers report on completion/blockers; Sol must not repeatedly poll them. Token conservation is required: compact packets/reports, relevant context only, logs saved by path and no redundant tool calls. No numerical token budget has been specified.
+
+The current GPT-6.1 Sol session is the sole orchestrator. Delegate bounded implementation tasks to GPT-6 Luna, giving it relevant files/plan and AGENTS.md. Workers report back for Sol to review. Planning references are saved. User has now instructed us to build the backend and delegate work.
+
+## Read on resume
+
+1. `AGENTS.md`
+2. `tasks/plan.md` and `tasks/todo.md`
+3. `docs/orchestration.md`, `docs/system-design.md`, `docs/contracts.md`
+4. `docs/diagrams/README.md` and relevant worker reports
+
+## Decisions
+
+- Luna high for non-trivial data/domain/memory/tool-loop work; medium for bounded UI/docs tasks. Recommendation pending real build calibration.
+- Usually two workers concurrently; Sol owns contracts/integration/review and may use a third worker for an independent check.
+- React/Vite + FastAPI + SQLite; shared knowledge separate from private conversation/results.
+- Five runtime tools, corrected calculations, component-list GenUI, source inspection.
+- Calculation date 2026-10-16; separate conversation/plan dates.
+- Existing original research and dataset remain unchanged.
+- Backend contract v1 is implemented; concrete classes/methods are in tasks/briefs/backend-interfaces.md.
+- Runtime adapter: configurable Chat Completions. Default OpenRouter Gemma free; local Ollama supported. No live provider key is configured.
+
+## Active assignments
+
+Contract: tasks/briefs/backend-interfaces.md v1 frozen.
+
+| Owner | Writable files | State |
+|---|---|---|
+| B1 Luna high | app/load.py, store.py, rules.py, reports.py; tests/test_store.py; report B1 | Implemented, reviewed and released |
+| B2 Luna high | app/memory.py; tests/test_memory.py; report B2 | Implemented, reviewed and released |
+| Sol | app/main.py, contracts.py, provider.py, agent.py, errors.py; API/provider tests; setup/docs | Implemented and reviewed |
+
+Workers reported completion without status polling. B1 received bounded repair assignments after Sol found correctness/security issues. B2 also performed an independent read-only integration review. Both assignments are released. No live runtime provider key is configured; automated model calls are scripted.
+
+## Verified so far
+
+Initial dataset/doc audit and later GenUI resource review are recorded in `docs/00-review.md` and `docs/04-genui-and-context.md`. Planning checks passed: all local links/heading anchors across 19 Markdown files, three native Excalidraw scene structures, three SVG exports and text bounds. All three diagrams were rendered via MCP; PNG previews were visually inspected and labels adjusted. Luna-high review findings were addressed. These checks do not test an application/provider or constitute a native-file import round trip.
+
+Backend implementation and checks: [integration report](reports/backend-integration.md). Real sample is loaded in ignored data/knowledge.sqlite. Tests include actual dataset analytics and the full HTTP/tool/result/source/private-recall path with a scripted model. Factual citations, private-message ownership, SQL CTE shadowing and dated override scope have regression checks.
+
+## Open items
+
+- Configure an API key or a local tool-capable model, then verify real model/tool behavior and all evaluation questions. Free provider availability/rate limits remain external constraints.
+- Actual test dataset overlap/conflicting-ID policy if needed.
+- Application Git repository creation was blocked by workspace .git permissions. No app commit exists; dataset remains a separate unchanged repository.
+- This workspace rejects local socket binding. Uvicorn reached app startup; HTTP behavior is verified using TestClient. Run the README server command from a normal local shell.
+- Frontend/browser rendering, test-set release, complete model question evaluation and submission remain unimplemented/unverified.
+
+## Next action
+
+Next phase: connect a live provider and build the frontend against docs/contracts.md. Keep six visual types, source inspection, user/thread switching and clear provider/partial-result errors. Follow exact file ownership and completion notifications. Do not rerun completed backend checks without a related change or unresolved risk.
