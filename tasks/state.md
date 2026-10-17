@@ -1,6 +1,6 @@
 # Orchestrator state
 
-Updated 17 October 2026. **Current phase: real backend question acceptance + native OpenUI frontend plan/compatibility check.**
+Updated 17 October 2026. **Current phase: Q1 data/source acceptance and native OpenUI P0 complete; native backend contract + browser UI next.**
 
 ## User decisions
 
@@ -16,28 +16,30 @@ Updated 17 October 2026. **Current phase: real backend question acceptance + nat
 - B1/B2 accepted after review and repairs. B3/B4/B5 provider/diagnostic/router work reviewed; serving model IDs are retained per call. Reports under tasks/reports/.
 - Actual sample loaded:200 wells,39,567 inspections,5,665 maintenance records,1,509 readable reports. No collisions/broken links in the recorded load.
 - Backend automated checks include real sample HTTP/tool/result/private-recall path with scripted models. These do not establish live model accuracy or browser rendering.
-- Local .git creation and socket binding are blocked. GitHub sync uses connector commits to https://github.com/shipitdev/hackbase. Router support, the Q1 harness and the native OpenUI plan are synced as separate reviewable commits through that connector. Credentials, runtime DBs, dataset and research checkouts are excluded.
+- User granted full permissions/network access. Root initialized local Git, fetched origin/main and aligned its index without changing working files; normal checkout now tracks https://github.com/shipitdev/hackbase. .env/runtime databases/node_modules remain ignored. DNS and DigitalOcean catalog access now work; earlier sandbox blockers are historical.
 
 ## Current assignments / ownership
 
 | Owner | Files | Status |
 |---|---|---|
-| B6 Luna high | scripts/check_backend_question.py; tests/test_backend_question.py; reportB6 | Released; root reviewed and fixed overly strict single-card acceptance. Two mocked harness tests pass. |
-| F0 Luna medium | frontend/package files, frontend/src/genui/**, frontend/scripts/**; reportF0 | Released blocked: npm registry DNS failure. Only provisional package.json exists; no parser/render proof. |
+| B6 Luna high | scripts/check_backend_question.py; tests/test_backend_question.py; reportB6 | Released; root accepts real Q1 data/source checks as pass_with_limitations. |
+| F0 Luna medium | frontend/package files, frontend/src/genui/**, frontend/scripts/**; reportF0 | Released and reviewed. Official parser, trusted Card/Table bindings, same-library artifacts and SSR proof pass. |
 | Sol | Root docs/state/setup, backend contracts/integration, review and GitHub sync | Native OpenUI plan saved; v2 backend migration not yet implemented. |
 
 ## Live backend check
 
 B6 created an opt-in command: `python3 scripts/check_backend_question.py`. It uses a SQLite backup of shared data and temporary private memory, sends one actual status question, and checks its answer/card against independent latest-inspection data and resolved inspection/manual/context evidence. No shared corrections/history are changed by this check.
 
-The worker's one live attempt returned API502 provider_error; the actual reason was not recorded in that first attempt. It is not a live pass and cannot be specifically attributed to DNS. The script now prints safe structured error details for the next attempt. No retries/benchmark were run. Normal-terminal live acceptance remains required because agent workspace networking has been blocked previously.
+After full permissions, root catalog GET succeeded. Live Q1 returned correct source-backed data with caveats. Root fixed general citation collection for source IDs explicitly mentioned in answer/limitations/conflicts, then independently revalidated the final actual response: **pass_with_limitations**, not an uncaveated complete answer. Exact latest state:INS-0001-0203,25.6C wellhead,22.4C ambient,3.2C delta,15C threshold, producing0. All seven final source citations resolve and saved component data matches a complete query result.
+
+The harness had also imposed exact caveat wording ('after', selected work-order phrases). Those were removed while retaining numeric/time/source/result checks and requiring explained limitations. A regression rejects incorrect production values. Full backend suite70passed before the last checker-only change; final checker5tests pass. Original private answer and validation summary remain ignored under data/checks/. Five kimi-k3 calls took82317ms; optimize latency before demo rather than claiming it is fast.
 
 ## OpenUI plan / next actions
 
-1. User was asked to run `python3 scripts/check_backend_question.py` and `npm --prefix frontend install --save-exact` in the normal terminal. Await backend JSON/error and install completion. Then finish F0 headless parser, same-library schema/prompt, result binding and renderer proof. Sol confirmed ENOTFOUND registry.npmjs.org with one bounded no-retry npm metadata check. Do not claim a render/build from the manifest alone.
-2. On success, freeze native UI contractv2, using official parser validation and the existing result ownership/column/revision checks. Retain old answers without rewriting history. No custom language parser or duplicate model-authored JSON UI manifest.
+1. P0 is reviewed and passes official parsing, restrictions, schema/prompt drift and SSR for trusted Card/Table values. Root pinned transitive katex0.18.2 to fix the five reported low findings; npm install/audit reports0 vulnerabilities and both OpenUI/KaTeX rendering checks pass.
+2. P0 passes; next freeze native UI contractv2, using official parser validation and the existing result ownership/column/revision checks. Retain old answers without rewriting history. No custom language parser or duplicate model-authored JSON UI manifest.
 3. Build user/thread chat shell + sources, then all six displays and actual browser checks. Existing Excalidraw layout remains the reference.
-4. Run live Q1, then the18 scenarios with actual model answers, corrections and user switching. Preserve analysis/conversation dates separately.
+4. After native response migration, rerun live Q1 and then the18 scenarios with actual model answers, corrections and user switching. Preserve analysis/conversation dates separately.
 
 ## Read on resume
 

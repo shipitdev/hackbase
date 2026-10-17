@@ -2,7 +2,7 @@
 
 **Decision, 17 October 2026:** the user chose direct OpenUI Lang generation. This replaces the earlier plan to generate a JSON component list and translate it in the browser. Build a narrow integration first, then the complete chat interface. Existing source data, calculation rules, private memory and DigitalOcean model access stay in place.
 
-**Execution status:** P0 has a provisional package manifest only. npm cannot resolve registry.npmjs.org in the agent workspace. Package versions, headless parsing and rendering are not verified. The backend real-question harness has two passing mocked checks; its live provider attempt failed. User-terminal follow-up commands are recorded in tasks/state.md.
+**Execution status:** P0 passes with installed/pinned packages: official headless parsing, same-library schema/prompt generation, result-backed built-in Card/Table widgets and ReactDOM server rendering. Root added guard checks and patched the KaTeX advisory chain; npm audit now reports zero vulnerabilities. This proves compatibility, not a browser app or native backend response. The backend real question now passes independent numeric/source/saved-result checks with limitations preserved. The final observed response took82seconds.
 
 ## What the user sees
 
@@ -91,7 +91,7 @@ Keep assignments small and disjoint. Workers report on completion; do not poll. 
 - `frontend/scripts/check-openui.tsx`: generate schema/prompt, parse a known program, server-render its components and assert exact supplied values.
 - Generated schema/prompt under `frontend/src/genui/generated/`; document how to regenerate and check drift.
 
-This is a design, not a claim that dependencies have been installed or that an OpenUI interface has rendered. Local Node 22.19.0/npm 10.9.3 are present; OpenUI packages were not found in the npm cache. Network/package availability is a separate compatibility gate.
+P0 is now implemented. Run `npm --prefix frontend run check:openui` to check generated schema/prompt drift, native parsing restrictions and server rendering against fictional trusted data. Node22.19/npm10.9 were used; exact dependencies are pinned in package.json and package-lock.json. A browser build and live model-generated OpenUI answer are still pending.
 
 ## Evidence and unresolved work
 
@@ -102,4 +102,4 @@ This is a design, not a claim that dependencies have been installed or that an O
 - [Conversational analytics example](https://www.openui.com/cookbooks/conversational-analytics): ready-made tables, line/bar charts and the complete chat-shell option. Its hosted Gateway/cloud-history setup is an example, not a requirement to replace our backend.
 - [OUI-1 announcement](https://www.openui.com/blog/oui-1): a UI-specialized model; it is separate from adopting the OpenUI toolkit. No assumption that it is available through our DigitalOcean account.
 
-Backend Q1 live acceptance is still open. The new harness exists, but its one live attempt returned provider_error. No broad evaluation result or browser rendering is claimed. A successful small router smoke proves tool connectivity, not domain correctness or native OpenUI generation quality.
+Backend Q1 data/source acceptance is pass_with_limitations after independent revalidation of an actual live answer. The checker accepts equivalent caveat wording while preserving strict numeric/time/citation/result checks; the response is not forced to complete. This does not establish all18 questions or native model-generated OpenUI output. No broad evaluation result or browser rendering is claimed. A successful small router smoke proves tool connectivity, not domain correctness or native OpenUI generation quality.

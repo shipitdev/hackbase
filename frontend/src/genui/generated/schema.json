@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "AnswerLayout": {
+      "$ref": "#/$defs/AnswerLayout"
+    },
+    "ResultCard": {
+      "$ref": "#/$defs/ResultCard"
+    },
+    "ResultTable": {
+      "$ref": "#/$defs/ResultTable"
+    }
+  },
+  "required": [
+    "AnswerLayout",
+    "ResultCard",
+    "ResultTable"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "AnswerLayout": {
+      "type": "object",
+      "properties": {
+        "children": {
+          "minItems": 1,
+          "maxItems": 6,
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/ResultCard"
+              },
+              {
+                "$ref": "#/$defs/ResultTable"
+              }
+            ]
+          }
+        }
+      },
+      "required": [
+        "children"
+      ],
+      "additionalProperties": false,
+      "description": "Root layout that composes result-backed cards and tables."
+    },
+    "ResultCard": {
+      "type": "object",
+      "properties": {
+        "resultId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "fields": {
+          "minItems": 1,
+          "maxItems": 20,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        }
+      },
+      "required": [
+        "resultId",
+        "title",
+        "fields"
+      ],
+      "additionalProperties": false,
+      "description": "Shows selected fields from one row in a server-saved result."
+    },
+    "ResultTable": {
+      "type": "object",
+      "properties": {
+        "resultId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "fields": {
+          "minItems": 1,
+          "maxItems": 20,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        }
+      },
+      "required": [
+        "resultId",
+        "title",
+        "fields"
+      ],
+      "additionalProperties": false,
+      "description": "Shows selected columns from a server-saved result."
+    }
+  }
+}

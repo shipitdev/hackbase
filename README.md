@@ -48,3 +48,14 @@ python3 -m pytest -q
 Tests use temporary databases. Runtime databases and credentials are ignored; source data/research is preserved. Calculations use 17 October 2026, separate from conversation timestamps. New records can be loaded with the same loader; conflicting existing IDs fail without discarding active data or runtime feedback.
 
 Read [system design](docs/system-design.md), [contracts](docs/contracts.md), [state](tasks/state.md) and [backend interfaces](tasks/briefs/backend-interfaces.md) for development. Worker ownership/reports remain in `tasks/`; the overall checklist still includes future frontend and submission work.
+
+## OpenUI compatibility proof
+
+```sh
+npm --prefix frontend ci
+npm --prefix frontend run check:openui
+```
+
+This checks native OpenUI parsing, result-backed Card/Table widgets, schema/prompt drift, rejected dynamic programs, and ReactDOM server rendering. It is not a complete browser app yet. See the [native OpenUI plan](docs/05-frontend-openui.md). Dependencies are pinned; a targeted KaTeX override fixes the reported low-severity audit chain.
+
+The opt-in real backend check is `python3 scripts/check_backend_question.py`. It can report `pass_with_limitations` when the answer's data and sources pass but observation/provenance caveats remain. It uses the configured paid provider and isolated temporary state.
