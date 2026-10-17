@@ -233,7 +233,7 @@ export default function App() {
         <form className="composer" onSubmit={submit}>
           <label className="sr-only" htmlFor="prompt">Ask a question about your assets</label>
           <textarea id="prompt" value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={keySubmit} placeholder="Ask about your assets…" rows={1} disabled={busy || creatingThread || !threadId || !health?.chat_ready} />
-          <button type="submit" aria-label="Send question" disabled={busy || creatingThread || !draft.trim() || !threadId || !health?.chat_ready}>{busy ? "…" : "↑"}</button>
+          <button type="submit" aria-label="Send question" disabled={busy || creatingThread || !draft.trim() || !threadId || !health?.chat_ready}>{busy ? "Sending…" : "Send"}</button>
           <small>Enter to send · Shift + Enter for a new line</small>
         </form>
       </div>

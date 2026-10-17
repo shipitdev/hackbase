@@ -38,3 +38,6 @@ Backend localhost8000: `python3 -m uvicorn app.main:app --host 127.0.0.1 --port 
 Frontend localhost5173: `npm --prefix frontend run dev`. Node22.12+ and frontend dependencies also needed by backend validator. Both local servers are running; backend was restarted with final Python integration.
 
 Current plan tasks/plan.md final-priorities section; checklist tasks/todo.md. Reports F6-final-sprint.md, F4-layout.md, F5-six-visuals.md, D1-release-readiness.md, R1-runtime-reliability.md, E2-evaluation-review.md. Generated schema/prompt `npm --prefix frontend run check:openui -- --write`; normal check catches drift. Submission draft is not final/complete.
+
+## Accepted F7 Send-control fix
+Luna medium implemented shrinkable grid row/sidebar and bounded scrollable error text; Send/Sending label retained with existing accessible name. Root removed hard320px body min-width that clipped zoomed narrow views.20browserchecks across empty/typed/busy/long-error/generated-table at CSS widths256/312/614/1152 pass; final frontend production build passes. No paid model calls; no backend restart needed. All F7 files returned. Report tasks/reports/F7-send-button.md.
