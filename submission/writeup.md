@@ -16,11 +16,11 @@ FastAPI, SQLite, React/Vite, OpenUI and Leaflet. DigitalOcean inference-router w
 
 ## Observed results and limitations
 
-See tasks/reports/E1-reviewed-results.md for the sample18-question evaluation. It contains partial answers, failures and unverified dependent scenarios; it is not an18/18 pass. Runtime repairs and visual completion have separate reports. No dollar cost is claimed from incomplete usage. Provider latency/timeouts remain a limitation. The final 11-question / 21-turn evaluation is running separately on an isolated copy of the final dataset. Its results are pending review.
+See tasks/reports/E1-reviewed-results.md for the sample18-question evaluation. It contains partial answers, failures and unverified dependent scenarios; it is not an18/18 pass. Runtime repairs and visual completion have separate reports. No dollar cost is claimed from incomplete usage. Provider latency/timeouts remain a limitation. The final evaluation attempted all 11 questions / 21 turns in order on an isolated copy. Sixteen HTTP200 responses were partial and five calls timed out; most partials lacked usable evidence. Supported key conclusions were the refusal to infer oil volume (Q2) and Northwest Production’s Nathan Pierce /150-well answer (Q9-2). This is not a broad accuracy pass. Context/validation exhaustion and provider timeouts prevented most complex answers; see tasks/reports/E3-final-evaluation.md.
 
 ## Final packaging still required
 
-- Fill released-data results from observed answers, with source support and failures.
+- Condense the reviewed final evaluation into the results page, with source support and failures.
 - Add the repository's license after confirming the intended license.
 - Export a readable 2–3 page write-up and record a narrated demo of at most5minutes.
 - Verify repository, video and write-up links; submit only with user authorization.

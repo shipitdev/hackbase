@@ -1,45 +1,54 @@
-# Video pitch script (target: 4:20–4:50)
+# Video pitch script — under five minutes
 
-**Recording note:** Final evaluation is still underway. Replace bracketed fields only after checking each answer against its cited source and saved result. Keep the first evaluation output unchanged; label any separate rerun. Do not invent answers, pass rates, or cost figures.
+Read the quoted paragraphs. The bracketed lines are recording directions. The final evaluation is complete; the figures below describe observed responses, not an accuracy pass rate.
 
-## 0:00–1:30 — How it works (about 90 seconds)
+## 0:00–1:20 — Design
 
-**[Show `docs/diagrams/video-system.svg` full screen.]**
+[Show `docs/diagrams/video-system.svg`. Follow the arrows as you speak.]
 
-“This system turns the supplied well records and operating documents into answers people can inspect. A checked loader puts the records into a shared database and keeps the originals. Accepted corrections affect later calculations at their stated scope; the original reading remains available.
+“Oil-field information is spread across readings, repair reports, rules and operator notes. I built a chat interface that brings those sources together and lets someone inspect where an answer came from.
 
-“When someone asks a question in the browser, the backend checks the selected user and conversation. The copilot works with the configured DigitalOcean language model and can call five tools. SQL runs approved database queries. Evidence opens a cited source. Search finds useful documents. Recall reads that user’s earlier chats. Remember records a clear correction or shared fact after the server checks it.
+“The dataset goes through a loader into the shared database. It contains 600 wells across seven areas. For this final dataset, today means 15 January 2027.
 
-“Shared well facts and private chats live separately. Private reads use the user selected by the backend, and saved results belong to that user and conversation. So a chart can use the same checked numbers as the answer without exposing another person’s chat.
+“When I ask a question, the backend checks the selected user and conversation. The copilot uses a language model hosted by DigitalOcean and gives it five tools: database queries for numbers, evidence for original records, search for documents, recall for earlier chats, and remember for explicit shared facts or corrections.
 
-“The backend checks the model’s OpenUI description against those saved results. The browser then renders the allowed cards, tables, and charts from the saved rows. The model suggests the presentation; the application makes sure it uses saved numbers and results belonging to the selected user.”
+“The two databases serve different purposes. Shared facts are available across users. Private chats and saved results belong to the selected user. Corrections keep the original reading available. This prototype uses a demo user picker; production sign-in would be separate.
 
-## 1:30–4:15 — Live use case (about 2:45)
+“The model also proposes a display using OpenUI. The dashed arrow shows that proposal. The backend checks the display against saved results, then the browser renders it. The chart or table uses saved rows rather than numbers invented inside a display.”
 
-**[Switch to the running browser. Show the selected demo user and a fresh dedicated chat.]**
+## 1:20–3:35 — Live demo
 
-“I’ll ask one question that has been checked against its source.”
+[Use Robert Hayes and a fresh chat. Rehearse once before recording. This question's key facts were verified in final evaluation Q9-2 and independently checked against the source database. The shorter standalone wording below has not had a separate live run.]
 
-**[After evaluation and source review, replace this with the exact question: `[VERIFIED QUESTION]`. Submit it once and show the completed response.]**
+“Let me show a simple question with an answer we can check.”
 
-“Here is the answer. This table or chart uses the saved result the backend checked. I can open the citation to see the source behind the statement.”
+[Ask: **Who leads Northwest Production, and how many wells does that team run?**]
 
-**[Show the cited source, then return to the answer. Mention actual figures and units only after verifying them.]**
+“The source records identify Nathan Pierce as the lead, and the team has 150 wells. I’ll open the evidence behind the answer.”
 
-“The visual uses the same saved rows, so its numbers stay tied to the answer. If evidence is incomplete or disagrees, the answer should show that limit.”
+[Wait for the actual answer; show its citations. If it fails or differs, say so. Do not read the expected answer as though the UI returned it.]
 
-**[Ask a short, source-supported follow-up: `[VERIFIED FOLLOW-UP]`. Show its response and source or saved result.]**
+[Optional, only if rehearsal succeeds: ask **Show that team’s wells in a table with well ID and area.** This visual follow-up has not been validated by the final evaluation. Otherwise use the already captured Q2 table below.]
 
-“Follow-ups can use this conversation and, when relevant, this user’s earlier private chat. Private reads are checked against the selected user. This is a local demo with a user picker; production sign-in would be a separate step.”
+[If the table follow-up succeeds, point out one row and open its source.]
 
-**[If the selected verified case includes a correction, show its scope and the original source reading. Otherwise skip this optional shot.]**
+“The model chose the table layout, but the rows come from the saved database result. The server checks that the display refers to that result.”
 
-“An accepted correction affects later calculations only at its stated scope, and the original source value remains available. A casual claim stays attributed; it does not silently rewrite a measured reading.”
+[If the follow-up fails, show the failure honestly and move to the results. Do not claim the visual worked.]
 
-**[Show a meaningful limitation or disagreement from the verified case, if available.]**
+## 3:35–4:20 — Results and limits
 
-## 4:15–4:45 — Close (about 30 seconds)
+“We ran all 11 final questions, including their follow-ups: 21 turns in order. Sixteen returned partial responses and five timed out. A partial response did not necessarily contain a useful answer, so I’m not calling those sixteen successes.
 
-“We reviewed `[X/Y reviewed]` final scenarios; `[verified outcome]`. The main limitation was `[main limitation]`. This demo shows one use case checked against its source, with the answer, evidence, and saved visual connected.”
+“Two turns had supported key conclusions: the system correctly said oil volume was not measured, and it correctly identified Northwest Production’s lead and its 150 wells. Most complex questions did not produce enough evidence to assess. The main failures were context and answer-validation limits, plus provider timeouts.
 
-Keep the finished video under five minutes. The timing above leaves room for the real response and source panel.
+“The next step is to improve how the system retrieves smaller pieces of evidence and finishes a valid answer, then rerun the affected cases. The data and display boundaries are implemented, but this final evaluation shows that the reasoning flow still needs work.”
+
+## Before recording
+
+- Use a readable full-screen diagram; Shared DB is the upper cylinder, Private DB the lower cylinder. The dashed arrow carries the proposed UI; saved results provide the values.
+- Rehearse the live question. Allow time for inference; the timestamp ranges are a guide, not a latency guarantee.
+- Keep the first evaluation unchanged. Label later reruns separately.
+- A diagram and narrated expectation are not proof of a successful live answer. Show the actual outcome and preserve its qualifications.
+
+Final evaluation: `tasks/reports/E3-final-evaluation.md`. No dollar-cost claim is made because timeout usage is incomplete. No broad accuracy percentage is justified.

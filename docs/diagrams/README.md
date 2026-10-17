@@ -32,3 +32,5 @@ The native files contain standard Excalidraw elements, without MCP camera comman
 [Video architecture — editable Excalidraw](video-system.excalidraw) · [widescreen SVG](video-system.svg) · [plain-language pitch script](../../submission/pitch-script.md). This newer drawing describes the implemented final-release flow, with database cylinders, five tools, private/shared stores and validated native OpenUI. It supersedes the old planning system drawing for the video.
 
 MCP checkpoint `397bfffa662d43ee82`; local files remain the durable references.
+
+Text-field repair: current MCP checkpoint `9c29955606604823a6`; standalone annotations now include full native text dimensions so they remain visible when the scene is imported.

@@ -52,3 +52,9 @@ Luna medium implemented shrinkable grid row/sidebar and bounded scrollable error
 - Accepted video_demo Luna medium; ownership returned: docs/diagrams/video-system.excalidraw, docs/diagrams/video-system.svg, submission/pitch-script.md, tasks/reports/V1-video-demo.md. One-/two-word diagram labels, database shapes, actual runtime flow, simple narrated script; accuracy placeholders pending E3. No application changes or paid calls.
 
 V1 accepted: 16:9 editable Excalidraw + SVG, mixed shapes/database cylinders, five tools and saved-result/nativeUI flow reviewed. Pitch script ~90sec design + live demo + results placeholders, total<5min. MCP checkpoint397bfffa662d43ee82. User records narration/demo; final accuracy still awaits E3.
+
+## E3 final evaluation reviewed
+- All21turns/11scenarios attempted:16HTTP200 partial,5HTTP504; no complete statuses. Most partials contain no usable evidence, not16passes.
+- Supported key conclusions: Q2 no measured oil volume; Q9-2 NathanPierce and150Northwest wells (root independently checked). Other fullscenario accuracy unproven; Q8-4 persisted a sharedclaim only in isolated evalDB and must not be treated as verified pump replacement.
+- Final_eval ownership returned; rawresults ignored data/evaluations/final-release/, report tasks/reports/E3-final-evaluation.md. No retries or tuning occurred. ActiveDB stillrevision1/zerochanges.
+- Pitch updated with observedresults and realistic nextsteps. Fixed missing native Excalidraw standalone text dimensions, including SharedDB label; MCP checkpoint9c29955606604823a6. Demo rehearsal/livefollowup remain unverified.
