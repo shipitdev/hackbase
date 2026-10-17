@@ -263,7 +263,12 @@ class Copilot:
             if round_index == 6:
                 messages.append({"role": "user", "content": "Finish now with the required final JSON using only evidence and saved results already in this conversation. Do not make new tool calls. If evidence is insufficient, state that limitation."})
             try:
-                completion = self.provider.complete(messages, TOOLS if tools_available else [], timeout=min(getattr(self.provider, "timeout_seconds", 45.0), remaining))
+                completion = self.provider.complete(
+                    messages,
+                    TOOLS,
+                    timeout=min(getattr(self.provider, "timeout_seconds", 45.0), remaining),
+                    tool_choice=None if tools_available else "none",
+                )
             except AppError as exc:
                 exc.evaluation_metadata = {"served_models": served_models, "usage": usage, "latency_ms": round((time.monotonic() - started) * 1000)}
                 raise

@@ -68,7 +68,7 @@ class CompatibleProvider:
     def configured(self):
         return bool(self.model and (self.api_key or self.local))
 
-    def complete(self, messages, tools, *, timeout=None, max_tokens=4096):
+    def complete(self, messages, tools, *, timeout=None, max_tokens=4096, tool_choice=None):
         if not self.configured:
             raise AppError("provider_error", "No API key is configured. Set GRADIENT_MODEL_ACCESS_KEY for DigitalOcean, LLM_API_KEY, or the provider-specific key.", 503)
         headers = {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
@@ -76,6 +76,8 @@ class CompatibleProvider:
         try:
             with httpx.Client(transport=self.transport, timeout=httpx.Timeout(timeout, connect=min(timeout, 10))) as client:
                 payload = {"model": self.model, "messages": messages, "tools": tools, "stream": False}
+                if tool_choice is not None:
+                    payload["tool_choice"] = tool_choice
                 payload["max_completion_tokens" if self.digitalocean else "max_tokens"] = max_tokens
                 if self.routing_preference:
                     payload["routing_preference"] = self.routing_preference

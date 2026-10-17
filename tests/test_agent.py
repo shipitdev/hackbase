@@ -93,19 +93,23 @@ def test_schema_failure_reports_only_known_field_names():
 
 def test_final_two_rounds_are_reserved_for_no_tool_synthesis_and_repair():
     class Inspecting(Scripted):
-        def __init__(self, responses): super().__init__(responses); self.offered_tools = []
+        def __init__(self, responses): super().__init__(responses); self.offered_tools = []; self.tool_choices = []
         def complete(self, messages, tools, **kwargs):
             self.offered_tools.append(tools)
+            self.tool_choices.append(kwargs.get('tool_choice'))
             return super().complete(messages, tools, **kwargs)
 
     clarification = final(response_kind='clarification', answer='Which date should I use?', ui=None, citation_refs=[], entity_ids=[])
-    provider = Inspecting([tool('memory_read', {}) for _ in range(6)] + [clarification])
+    invalid = final(ui=None, citation_refs=['invented'], entity_ids=[])
+    provider = Inspecting([tool('memory_read', {}) for _ in range(6)] + [invalid, clarification])
     answer = Copilot(Knowledge(), Memory(), provider).answer(
         {'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'}, 'Those wells?'
     )
     assert answer['answer'] == 'Which date should I use?'
     assert provider.offered_tools[:6] == [provider.offered_tools[0]] * 6
-    assert provider.offered_tools[6] == []
+    assert provider.offered_tools[6:] == [provider.offered_tools[0], provider.offered_tools[0]]
+    assert provider.tool_choices[:6] == [None] * 6
+    assert provider.tool_choices[6:] == ['none', 'none']
 
 
 def test_missing_evidence_cannot_become_completed_factual_answer():

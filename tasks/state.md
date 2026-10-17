@@ -82,3 +82,5 @@ All21turnscomplete:12HTTP200partial,9HTTP502upstream400,0HTTP504. Tenpartialscon
 
 ## Local submission bundle ready
 AcceptedW1E4refresh: submission/asset-intelligence-writeup.pdf exactly2pages, bothpagesrootvisuallychecked, DOCXcompanionfullfigure/sanitizerchecked. LocalignoredZIPsubmission/flytbase-submission.zip:30files/21answercaptures, PDF/DOCX+report+sourcechecks+diagram/script+README. Integrityandkeyexclusionspass; novideo/DBs/privatetraces. UserwilluploadmanualDrive. R4workerownsprovider/agent/testsforboundedtool-choicecompatibilityrepair; nofurtherpaidcalls. FullE4resultsremainimmutable.
+
+R4compatibilityaccepted: providerkeepsdefinitions+tool_choice:none insynthesis; root61focusedtestspass, restartedafterconfirmingnopendingliverequests. No postR4paidcheck, E4scoresunchanged. Allworkerownershipreturned. FinalZIPincludesversionnoteandR4report; videoandportal/Driveuploadremainuseractions.

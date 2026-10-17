@@ -9,3 +9,5 @@ Public repository: https://github.com/shipitdev/hackbase
 The evaluation report summarizes the latest full run. final-answers.html and answers/ preserve each official turn's captured answer, visual specification, saved table rows, citations and errors. They contain neither runtime SQLite databases nor private tool traces. HTTP success is not an accuracy pass. Diagrams and the pitch script are reference material for the video.
 
 The narrated video is NOT included: record and upload it separately, at most five minutes. Final submission through the event portal remains your action.
+
+Version note: E4 was captured before the final R4 tool-choice compatibility repair. That later repair passed61 focused offline tests but has not had a paid live retest. Its existence does not change the reported E4 outcomes.

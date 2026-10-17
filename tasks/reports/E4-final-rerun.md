@@ -34,3 +34,5 @@ The independent oracle in `tasks/reports/E4-source-oracles.md` supplies the Q3/Q
 Run used the existing `scripts/evaluate_final.py` imported with `OUT` redirected to `data/evaluations/final-rerun`, then `main()`; its scenario prompts/order were unchanged. The private directory contains all 21 full prompts, responses, UI specs, returned results, errors, per-turn model/usage/latency data, shared evaluation DB, memory DB and attempt state. The output is mode-restricted and ignored by Git. This report contains paraphrased outcomes rather than runtime chat transcripts.
 
 **Sol review:** accepted as the complete post-fix run, not a successful product evaluation. All21 captures were exported to the local submission bundle. Only two turns have supported key conclusions; HTTP200 counts are not an accuracy score. No timeout elimination beyond the observed run is guaranteed.
+
+Version note: these captures precede the later R4 tool-choice compatibility repair, which has only offline test evidence. No post-R4 suite score is claimed.

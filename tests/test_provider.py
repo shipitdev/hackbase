@@ -1,3 +1,5 @@
+import json
+
 import httpx
 import pytest
 
@@ -16,6 +18,18 @@ def test_provider_preserves_tools_and_uses_configured_endpoint():
     assert result["message"]["content"] == "ok"
     assert result["usage"]["total_tokens"] == 12
     assert b'"tools"' in seen[0].content
+
+
+def test_provider_sends_tool_choice_when_explicitly_requested():
+    seen = []
+    provider = CompatibleProvider("test-model", "https://example.test/v1", "test-key", transport=httpx.MockTransport(
+        lambda request: (seen.append(request) or httpx.Response(200, json={"choices": [{"message": {"content": "ok"}}]}))
+    ))
+    definitions = [{"type": "function", "function": {"name": "lookup"}}]
+    provider.complete([], definitions, tool_choice="none")
+    payload = json.loads(seen[0].content)
+    assert payload["tools"] == definitions
+    assert payload["tool_choice"] == "none"
 
 
 def test_provider_call_timeout_is_configurable_and_validated(monkeypatch):
