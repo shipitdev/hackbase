@@ -1,5 +1,6 @@
 """Local demo API. User selection is explicit; it is not production authentication."""
 import logging
+import math
 import os
 from datetime import date
 from pathlib import Path
@@ -48,7 +49,22 @@ def create_app(*, knowledge=None, knowledge_path=None, memory_path=None, provide
 
     @app.exception_handler(AppError)
     async def app_error(_request: Request, exc: AppError):
-        return JSONResponse(status_code=exc.status_code, content={"error": {"code": exc.code, "message": exc.message}})
+        content = {"error": {"code": exc.code, "message": exc.message}}
+        metadata = getattr(exc, "evaluation_metadata", None)
+        if isinstance(metadata, dict):
+            safe = {}
+            models = metadata.get("served_models")
+            if isinstance(models, list) and all(isinstance(model, str) for model in models):
+                safe["served_models"] = models
+            usage = metadata.get("usage")
+            if isinstance(usage, dict):
+                safe["usage"] = {key: value for key, value in usage.items() if isinstance(key, str) and isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)}
+            elapsed = metadata.get("latency_ms")
+            if isinstance(elapsed, (int, float)) and not isinstance(elapsed, bool) and math.isfinite(elapsed):
+                safe["latency_ms"] = elapsed
+            if safe:
+                content["evaluation_metadata"] = safe
+        return JSONResponse(status_code=exc.status_code, content=content)
 
     @app.exception_handler(RequestValidationError)
     async def request_error(_request: Request, exc: RequestValidationError):

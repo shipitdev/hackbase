@@ -70,7 +70,7 @@ def test_missing_evidence_cannot_become_completed_factual_answer():
     copilot = Copilot(Knowledge(), Memory(), Scripted([final(ui=None, citation_refs=['invented']), final(ui=None, citation_refs=['invented'])]))
     answer = copilot.answer({'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'}, 'Status?')
     assert answer['status'] == 'partial'
-    assert 'not be verified' in answer['answer']
+    assert "couldn't verify" in answer['answer']
     assert answer['ui'] is None
 
 
@@ -167,6 +167,96 @@ def test_router_served_models_are_saved_for_each_model_round():
     answer=Copilot(Knowledge(),Memory(),model).answer({'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-17'},'Status?')
     assert answer['model']=='inference-router'
     assert answer['served_models']==['selected-model','selected-model']
+
+
+def test_oversized_tool_batch_is_rejected_with_matching_protocol_replies_then_repaired():
+    class Inspecting(Scripted):
+        def __init__(self, responses): super().__init__(responses); self.requests=[]
+        def complete(self, messages, tools, **kwargs):
+            self.requests.append(messages)
+            return super().complete(messages, tools, **kwargs)
+    class CountedKnowledge(Knowledge):
+        queries=0
+        def query_shared(self, sql, params=None):
+            self.queries += 1
+            return super().query_shared(sql, params)
+
+    calls=[{"id":f"call-{i}","type":"function","function":{"name":"run_sql","arguments":json.dumps({"sql":"SELECT * FROM effective_inspections"})}} for i in range(9)]
+    provider=Inspecting([{"role":"assistant","tool_calls":calls},final(ui=None,entity_ids=[])])
+    knowledge=CountedKnowledge()
+    answer=Copilot(knowledge,Memory(),provider).answer({'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'},'Status?')
+
+    assert answer['status']=='complete'
+    assert knowledge.queries==0
+    replies=[m for m in provider.requests[1] if m['role']=='tool']
+    assert len(replies)==9
+    assert {m['tool_call_id'] for m in replies}=={f'call-{i}' for i in range(9)}
+    assert all('no calls in this batch ran' in m['content'] for m in replies)
+
+
+def test_second_oversized_tool_batch_stops_after_one_repair_without_writes():
+    class CountedKnowledge(Knowledge):
+        writes=0
+        def apply_shared_change(self,*args): self.writes+=1
+    class CountingProvider(Scripted):
+        model='inference-router'
+        def __init__(self,responses): super().__init__(responses); self.calls=0
+        def complete(self,*args,**kwargs): self.calls+=1; return super().complete(*args,**kwargs)
+
+    statement='WELL-0001 is planned for workover.'
+    args={'kind':'shared_claim','payload':{'scope':'well','target_id':'WELL-0001','text':statement,'reason':'Operator update'},'source_quote':statement}
+    def batch(prefix):
+        return {'role':'assistant','tool_calls':[{'id':f'{prefix}-{i}','type':'function','function':{'name':'remember','arguments':json.dumps(args)}} for i in range(9)]}
+    provider=CountingProvider([batch('first'),batch('second')])
+    knowledge=CountedKnowledge()
+    answer=Copilot(knowledge,Memory(),provider).answer({'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'},statement)
+
+    assert provider.calls==2
+    assert knowledge.writes==0
+    assert answer['status']=='partial'
+    assert 'after its one repair attempt' in answer['limitations'][0]
+
+
+def test_prompt_teaches_sqlite_syntax_and_concise_cited_prose():
+    class Inspecting(Scripted):
+        def complete(self, messages, tools, **kwargs):
+            prompt=messages[0]['content']
+            assert 'SQL uses SQLite, not PostgreSQL' in prompt
+            assert "lower(column) LIKE lower(?)" in prompt
+            assert "Do not use `ILIKE`, `::date`, typed `DATE '...'` literals" in prompt
+            assert 'Keep citations, attribution and uncertainty caveats.' in prompt
+            return super().complete(messages, tools, **kwargs)
+    answer=Copilot(Knowledge(),Memory(),Inspecting([final(ui=None,entity_ids=[])] )).answer({'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'},'Status?')
+    assert answer['status']=='complete'
+
+
+def test_partial_answer_explains_failure_and_keeps_available_metadata():
+    class LargeKnowledge(Knowledge):
+        def rules_text(self):return 'x'*96000
+    answer=Copilot(LargeKnowledge(),Memory(),Scripted([])).answer({'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'},'Status?')
+    assert answer['status']=='partial'
+    assert '96,000-character context budget' in answer['answer']
+    assert answer['latency_ms'] is not None
+    assert answer['usage']=={}
+    assert answer['served_models']==[]
+
+
+def test_provider_error_carries_only_safe_aggregate_evaluation_metadata():
+    class FailsAfterQuery:
+        model='inference-router'
+        def __init__(self): self.calls=0
+        def complete(self,*args,**kwargs):
+            self.calls+=1
+            if self.calls==1:
+                return {'message':tool('run_sql',{'sql':'SELECT * FROM effective_inspections'}),'model':'served-model','usage':{'total_tokens':17}}
+            raise AppError('timeout','Model provider timed out; the request can be retried.',504)
+    provider=FailsAfterQuery()
+    with pytest.raises(AppError) as caught:
+        Copilot(Knowledge(),Memory(),provider).answer({'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'},'Status?')
+    assert caught.value.code=='timeout'
+    assert caught.value.evaluation_metadata['served_models']==['served-model']
+    assert caught.value.evaluation_metadata['usage']=={'total_tokens':17}
+    assert caught.value.evaluation_metadata['latency_ms']>=0
 
 
 def test_source_named_in_caveat_is_resolved_even_when_omitted_from_ref_list():

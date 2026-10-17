@@ -70,6 +70,40 @@ def test_provider_failure_is_clear_and_retry_does_not_duplicate_user_turn(tmp_pa
         assert len(c.get(f'/api/threads/{t}/messages',params={'user_id':'A'}).json()['messages'])==1
 
 
+def test_timeout_after_tool_round_exposes_safe_metadata_and_same_id_retry_keeps_one_user_turn(tmp_path):
+    class TimeoutThenSuccess:
+        model='inference-router'; configured=True
+        def __init__(self): self.calls=0
+        def complete(self,messages,tools,**kwargs):
+            self.calls+=1
+            if self.calls==1:
+                return {'message':{'role':'assistant','tool_calls':[{'id':'query','type':'function','function':{'name':'run_sql','arguments':json.dumps({'sql':'SELECT asset_id FROM assets'})}}]},'model':'query-model','usage':{'prompt_tokens':11}}
+            if self.calls==2:
+                error=AppError('timeout','Model provider timed out; the request can be retried.',504)
+                error.private_response='secret provider payload'
+                raise error
+            return {'message':{'content':json.dumps({'answer':'WELL-0001 is supported by the inspection record.','ui':None,'citation_refs':['INS-0001-0203'],'conflicts':[],'limitations':[],'entity_ids':['WELL-0001']})},'model':'answer-model','usage':{'completion_tokens':5}}
+
+    model=TimeoutThenSuccess()
+    with TestClient(create_app(knowledge=Knowledge(),memory_path=tmp_path/'memory.sqlite',provider=model)) as c:
+        thread=c.post('/api/threads',json={'user_id':'A'}).json()['thread_id']
+        body={'request_id':'timeout-retry','user_id':'A','thread_id':thread,'text':'Show the selected well'}
+        failed=c.post('/api/chat',json=body)
+        assert failed.status_code==504
+        payload=failed.json()
+        assert payload['error']=={'code':'timeout','message':'Model provider timed out; the request can be retried.'}
+        assert payload['evaluation_metadata']['served_models']==['query-model']
+        assert payload['evaluation_metadata']['usage']=={'prompt_tokens':11}
+        assert payload['evaluation_metadata']['latency_ms']>=0
+        assert 'private_response' not in payload and 'secret provider payload' not in failed.text
+
+        retried=c.post('/api/chat',json=body)
+        assert retried.status_code==200, retried.text
+        assert model.calls==3
+        messages=c.get(f'/api/threads/{thread}/messages',params={'user_id':'A'}).json()['messages']
+        assert [m['role'] for m in messages]==['user','assistant']
+
+
 def test_blank_message_is_rejected(client):
     c,_=client
     assert c.post('/api/chat',json={'request_id':'q','user_id':'A','thread_id':'t','text':'   '}).status_code==422

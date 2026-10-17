@@ -42,3 +42,22 @@ Both local servers were started for acceptance. README covers fresh setup. Node2
 2. P3: remaining bar/line/map/heatmap bindings with trusted saved data, stopped markers, zero cells, coordinate fallback. Preserve native parser boundary and component combinations; no duplicate JSON manifest.
 3. All 18 live scenarios including shared feedback/private recall/user switching and released test dataset. Existing tests/liveQ1 are not evidence all 18 pass.
 4. Submission/license/video/released-data work remains pending. Keep docs/05-frontend-openui.md,contracts.md and tasks/todo.md current.
+
+## Active E1 evaluation
+User authorized Luna to run all18 backend live questions without Playwright and instructed Sol not to run them. E1 Luna high exclusively owns scripts/evaluate_questions.py,tests/test_evaluate_questions.py,tasks/reports/E1-live-18.md and ignored data/evaluations/e1/**. Production code/config/demo databases unchanged. Isolated sequential scenarios, one paid attempt per required turn, resumable per-step evidence; data/memory and unsupported-visual results separate. Sol waits for completion/blocker and reviews report only, no rerun. Brief:tasks/briefs/E1-live-18.md.
+
+## E1 result and active repairs
+E1 returned:29 required turns,19 HTTP200 partial answers,8 errors,2 dependency-blocked. No full18pass claim. Report reviewed; root read traces only, did not execute evaluation. Confirmed SQLite dialect errors (ILIKE/typed date literals), tool-batch guard failures, timeout opacity, Q18 disagreement status and unsupported four visuals. Token usage lower bound1,291,630; error calls missing usage, cost unknown. No second paid benchmark authorized in this slice.
+R1 Luna high owns app/agent.py,provider.py,tests/test_agent.py,test_provider.py and reportR1 for bounded reliability fixes/offline regressions. E2 Luna medium owns scripts/evaluate_questions.py,tests/test_evaluate_questions.py,reportE2 and ignored review/** for offline harness audit/repair; original E1 outcomes immutable. Sol owns conflict policy after R1 returns agent.py, shared contracts/state/integration. Workers notify once complete/blocker, no polling.
+
+R1 review: cap oversized-batch repair to one attempt; ownership explicitly expanded to app/main.py and tests/test_api.py for allowlisted error evaluation_metadata. Root has not edited active worker files. Q18 conflict policy change deferred: official answer yes with both notes was delivered; E2 is clarifying semantics rather than claiming categorical factual failure.
+
+## Accepted post-evaluation repairs
+
+R1 and E2 returned all files. Sol reviewed source and test evidence; no active worker ownership. R1 worker-run51 focused runtime/API/provider tests pass; E2 worker-run11 offline harness tests pass plus compilation. Sol did not execute or rerun the18-question evaluation. No new paid calls or runtime model/budget changes.
+
+Implemented SQLite-specific date/filter/parameter guidance, concise answers, one shared bounded repair for excessive tool batches (zero tools execute in rejected batches), safe partial reasons/latency, and allowlisted aggregate metadata on original HTTP errors. SQL restrictions,8tools/8rounds/120s/96kcharacter limits remain intact. External provider timeouts unresolved.
+
+Evaluator now fences dispatch before paid calls, refuses ambiguous automatic replay, verifies prerequisite persisted state/exact Q6 list, uses user-qualified thread keys, records snapshot provenance and distinct ordered per-message timestamps with clock restoration, and captures new safe error usage metadata. Root caught/fixed module shadowing and same-turn timestamp issues through worker follow-up. Original E1 artifacts unchanged; reviewed sanitized18-row table is tasks/reports/E1-reviewed-results.md. Q18 official yes answer plus both notes aligns; resolved wording is a semantics concern, not proven wrong spill conclusion. No blanket conflict-status rewrite.
+
+Next: add four native result-backed displays; then delegate a small targeted live recheck of repaired failures with fresh isolated states, before another full18run. The current runner preserves E1 and will not automatically replay it; fresh evaluation output handling and missing Q16 prior-Michael-history setup still need attention for a full repeat. Failures after accepted writes must be interpreted from persisted state, not assumed rollback. Do not claim all18passed or that provider timeouts are solved.
