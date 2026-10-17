@@ -87,3 +87,5 @@ python3 scripts/preflight_dataset.py /path/to/released-data --base-db data/knowl
 Both output paths must be new. Review counts, report coverage, references and collisions before loading active data. Follow [the backup and promotion runbook](docs/released-data.md); preserve shared corrections and private memory. The released dataset has not been validated before arrival.
 
 Final release: 600 wells, 7 areas; set `ANALYSIS_DATE=2027-01-15`. Existing sample databases must be backed up and replaced with a fresh load because the release revises older records. See [release runbook](docs/released-data.md).
+
+Inference budgets are configurable: `LLM_CALL_TIMEOUT_SECONDS=90` and `ANSWER_TIMEOUT_SECONDS=240` in the demo configuration. The development proxy waits300seconds. These reduce premature cancellation; external provider limits and the separate context/validation limits can still fail. No automatic inference retries are enabled.

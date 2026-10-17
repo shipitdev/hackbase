@@ -58,3 +58,18 @@ V1 accepted: 16:9 editable Excalidraw + SVG, mixed shapes/database cylinders, fi
 - Supported key conclusions: Q2 no measured oil volume; Q9-2 NathanPierce and150Northwest wells (root independently checked). Other fullscenario accuracy unproven; Q8-4 persisted a sharedclaim only in isolated evalDB and must not be treated as verified pump replacement.
 - Final_eval ownership returned; rawresults ignored data/evaluations/final-release/, report tasks/reports/E3-final-evaluation.md. No retries or tuning occurred. ActiveDB stillrevision1/zerochanges.
 - Pitch updated with observedresults and realistic nextsteps. Fixed missing native Excalidraw standalone text dimensions, including SharedDB label; MCP checkpoint9c29955606604823a6. Demo rehearsal/livefollowup remain unverified.
+
+## R2 timeout repair active
+User authorized fixing/increasing timeouts. Luna high owns app/provider.py, app/agent.py, tests/test_provider.py, tests/test_agent.py, tasks/reports/R2-timeout-fix.md. No paidcalls yet; configurable provider/total budgets, focused tests, no silent retries/modelchanges. Root owns settings/restart/script. Demo script now uses exact finalQ9-2 and finalQ2, without invented prompts or requested visuals absent from those original turns.
+
+R2 code accepted/ownershipreturned: validated provider/answer time budgets; root56tests pass. Active.env90spercall/240stotal; Viteproxy300s (previously150). BackendPID35450 exec58888; proxyhealthready. final_eval owns scripts/check_timeout_fix.py, tasks/reports/R2-live-check.md and ignored timeout-fix outputs; authorized exactlyQ9-2 andQ4 once each afteractivation, noauto retries. No contextcap/modelchange.
+
+## R3 validation repair active
+R2 targetedQ9-2/Q4 checks bothavoidedtimeouts butreturnedemptyvalidationpartials (~29/~82sec). Demo is not reliableyet. Luna timeout_fix owns app/agent.py/tests/test_agent.py/tasks/reports/R3-validation-fix.md: distinguishsafevalidationreasons, reserve2of8roundsforfinalsynthesis/repair, preservegrounding. No historicaldrafterrorssaved, so specificsunknown. final_eval willfinishR2report thenprepareONEfreshQ9-2 postR3check in separatevalidation-fix folder; paidcallawaitsactivation.
+
+## W1 submission writeup active
+video_demo owns submission/asset-intelligence-writeup.docx/.pdf, scripts/build_writeup.py, tasks/reports/W1-writeup.md; intermediates ignoreddata/writeup. Exactly2pages: design+SVG then11question observedresults. NativeDriveimportunavailabledespiteinstalledplugin; userinformedrefresh/manualupload. Workspaceartifactruntime/markerunavailable; rootapprovedavailablelocalPDF/DOCXfallback, nohostLibreOffice/globalinstalls. DeliverPDFprimarywithpageQA.
+
+R3codeaccepted/ownershipreturned: root60tests pass, backendPID36226 exec18716 restarted. SinglefreshQ9-2 paidcheckauthorizedinvalidation-fix outputfolder; no fullrerun. W1writeupcontinuesindependently.
+
+R3targetedlivecheckdone: exactQ9-2returnedNathanPierce/150with3citations in37.759s, partialwithexplicitlimitations. InitialJSONdraftinvalid; finalrepairrecovered, safeprivate tracecaptured. No remainingvalidationerroronthatturn; notfullsuiterun. W1workerinformedtoincludeasclearlyseparatelatercheck. Drivebrowseruploadblockedbypermissiondecline; noalternate-routeupload.

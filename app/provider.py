@@ -1,10 +1,24 @@
 """One OpenAI-compatible chat adapter; no credentials are stored or returned."""
+import math
 import os
 from urllib.parse import urlparse
 
 import httpx
 
 from app.errors import AppError
+
+
+def _seconds_setting(name, default):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    try:
+        seconds = float(value)
+    except ValueError as exc:
+        raise AppError("invalid_request", f"{name} must be a finite positive number of seconds.") from exc
+    if not math.isfinite(seconds) or seconds <= 0:
+        raise AppError("invalid_request", f"{name} must be a finite positive number of seconds.")
+    return seconds
 
 
 def _digitalocean_403_hint(response):
@@ -32,6 +46,7 @@ class CompatibleProvider:
     def __init__(self, model=None, base_url=None, api_key=None, *, transport=None):
         self.model = model or os.getenv("LLM_MODEL", "google/gemma-4-26b-a4b-it:free")
         self.base_url = (base_url or os.getenv("LLM_BASE_URL", "https://openrouter.ai/api/v1")).rstrip("/")
+        self.timeout_seconds = _seconds_setting("LLM_CALL_TIMEOUT_SECONDS", 45.0)
         self.transport = transport
         url = urlparse(self.base_url)
         if url.scheme not in {"http", "https"} or not url.hostname or url.username or url.password or url.query or url.fragment:
@@ -53,10 +68,11 @@ class CompatibleProvider:
     def configured(self):
         return bool(self.model and (self.api_key or self.local))
 
-    def complete(self, messages, tools, *, timeout=45.0, max_tokens=4096):
+    def complete(self, messages, tools, *, timeout=None, max_tokens=4096):
         if not self.configured:
             raise AppError("provider_error", "No API key is configured. Set GRADIENT_MODEL_ACCESS_KEY for DigitalOcean, LLM_API_KEY, or the provider-specific key.", 503)
         headers = {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
+        timeout = self.timeout_seconds if timeout is None else timeout
         try:
             with httpx.Client(transport=self.transport, timeout=httpx.Timeout(timeout, connect=min(timeout, 10))) as client:
                 payload = {"model": self.model, "messages": messages, "tools": tools, "stream": False}

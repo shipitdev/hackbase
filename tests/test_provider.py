@@ -18,6 +18,23 @@ def test_provider_preserves_tools_and_uses_configured_endpoint():
     assert b'"tools"' in seen[0].content
 
 
+def test_provider_call_timeout_is_configurable_and_validated(monkeypatch):
+    monkeypatch.setenv("LLM_CALL_TIMEOUT_SECONDS", "90")
+    seen = []
+    provider = CompatibleProvider("test-model", "https://example.test/v1", "key", transport=httpx.MockTransport(
+        lambda request: (seen.append(request) or httpx.Response(200, json={"choices": [{"message": {"content": "ok"}}]}))
+    ))
+    provider.complete([], [])
+    assert seen[0].extensions["timeout"]["read"] == 90
+
+
+@pytest.mark.parametrize("value", ["0", "-1", "nan", "inf", "nope"])
+def test_provider_rejects_invalid_call_timeout(monkeypatch, value):
+    monkeypatch.setenv("LLM_CALL_TIMEOUT_SECONDS", value)
+    with pytest.raises(AppError, match="LLM_CALL_TIMEOUT_SECONDS"):
+        CompatibleProvider("test-model", "https://example.test/v1", "key")
+
+
 def test_provider_rejects_missing_remote_credentials_before_network():
     with pytest.raises(AppError, match="API key"):
         CompatibleProvider("test-model", "https://example.test/v1", "").complete([], [])

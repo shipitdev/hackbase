@@ -51,7 +51,7 @@ Example shape, using placeholder references only:
 }
 ```
 
-Actual factual answers require populated supporting citations; the example illustrates shape, not acceptable evidence completeness. Model drafts include response_kind (factual by default, or clarification). Factual answers require resolved citations; clarification is a question without factual components or an entity list. Conversation recall cites owned private message IDs. Total serialized model history is limited to 96,000 characters, with eight rounds and a 120-second wall-clock budget.
+Actual factual answers require populated supporting citations; the example illustrates shape, not acceptable evidence completeness. Model drafts include response_kind (factual by default, or clarification). Factual answers require resolved citations; clarification is a question without factual components or an entity list. Conversation recall cites owned private message IDs. Total serialized model history is limited to 96,000 characters, with eight rounds and a configurable wall-clock budget (ANSWER_TIMEOUT_SECONDS; default120 seconds). Each provider call uses LLM_CALL_TIMEOUT_SECONDS (default45 seconds), capped by the remaining overall budget. The demo config sets90/240seconds; these settings do not enlarge the96,000-character context cap or enable retries.
 
 Model output contains component descriptions and reference IDs; the server resolves/validates them and never trusts copied row values.
 

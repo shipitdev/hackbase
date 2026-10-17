@@ -1,6 +1,6 @@
 # Video pitch script — under five minutes
 
-Read the quoted paragraphs. The bracketed lines are recording directions. The final evaluation is complete; the figures below describe observed responses, not an accuracy pass rate.
+Read the quoted paragraphs. The bracketed lines are recording directions. **Latest rehearsal evidence:** after the validation fix, the exact Q9-2 prompt returned Nathan Pierce and150wells with3citations in37.8seconds. It retained explicit limitations; the full suite has not been rerun. Rehearse before recording. The final evaluation is complete; the figures below describe observed responses, not an accuracy pass rate.
 
 ## 0:00–1:20 — Design
 
@@ -16,25 +16,29 @@ Read the quoted paragraphs. The bracketed lines are recording directions. The fi
 
 “The model also proposes a display using OpenUI. The dashed arrow shows that proposal. The backend checks the display against saved results, then the browser renders it. The chart or table uses saved rows rather than numbers invented inside a display.”
 
-## 1:20–3:35 — Live demo
+## 1:20–3:35 — Exact final-test showcase
 
-[Use Robert Hayes and a fresh chat. Rehearse once before recording. This question's key facts were verified in final evaluation Q9-2 and independently checked against the source database. The shorter standalone wording below has not had a separate live run.]
+[Select Robert Hayes and start a fresh chat. Use Q9 turn2 exactly as written in the official final test set. It was the clearest factual answer in the completed run. The original test asks it within a multi-topic session; using it alone here is a standalone demonstration, not a replay of the entire Q9 scenario.]
 
-“Let me show a simple question with an answer we can check.”
+**Main prompt — final Q9, turn 2, exact wording:**
 
-[Ask: **Who leads Northwest Production, and how many wells does that team run?**]
+> Different topic. Who leads Northwest Production, and how many wells does that team run?
 
-“The source records identify Nathan Pierce as the lead, and the team has 150 wells. I’ll open the evidence behind the answer.”
+**Observed final-test answer:** Nathan Pierce leads Northwest Production; the team runs 150 wells. The returned answer had four citations and an explicit data-currentness limitation. Its key facts were independently checked against the source database. No table was requested or generated for this turn.
 
-[Wait for the actual answer; show its citations. If it fails or differs, say so. Do not read the expected answer as though the UI returned it.]
+“I’m using a question from the final evaluation. It asks who leads Northwest Production and how many wells the team runs. Our evaluated answer identified Nathan Pierce and 150 wells. I’ll run it here and open the evidence.”
 
-[Optional, only if rehearsal succeeds: ask **Show that team’s wells in a table with well ID and area.** This visual follow-up has not been validated by the final evaluation. Otherwise use the already captured Q2 table below.]
+[Submit once. Show the actual answer and a citation. Identical wording and successful delivery are not guaranteed. Do not add an untested table instruction.]
 
-[If the table follow-up succeeds, point out one row and open its source.]
+**Backup — final Q2, exact wording; Robert Hayes, fresh chat:**
 
-“The model chose the table layout, but the rows come from the saved database result. The server checks that the display refers to that result.”
+> Which well produced the most oil in 2026?
 
-[If the follow-up fails, show the failure honestly and move to the results. Do not claim the visual worked.]
+**Observed final-test behavior:** It explained that oil volume is not measured, so it could not identify a winner by barrels. It also generated a clearly labelled table of an inspection-based activity proxy: the first10 of52 wells tied at53/53 producing inspections. The proxy is not oil volume. Exact proxy numbers have not been independently recomputed for this recording.
+
+“This second final-test question shows an important limit. The data does not contain measured oil volumes. The evaluated answer said that clearly rather than inventing a largest producer. It also showed an inspection-based comparison, labelled as a proxy rather than barrels.”
+
+[Show the response, its qualifications and any generated table. Do not claim a live success if it times out. If both calls fail, show that outcome and move to the honest evaluation summary.]
 
 ## 3:35–4:20 — Results and limits
 
@@ -42,7 +46,7 @@ Read the quoted paragraphs. The bracketed lines are recording directions. The fi
 
 “Two turns had supported key conclusions: the system correctly said oil volume was not measured, and it correctly identified Northwest Production’s lead and its 150 wells. Most complex questions did not produce enough evidence to assess. The main failures were context and answer-validation limits, plus provider timeouts.
 
-“The next step is to improve how the system retrieves smaller pieces of evidence and finishes a valid answer, then rerun the affected cases. The data and display boundaries are implemented, but this final evaluation shows that the reasoning flow still needs work.”
+“After that first run, I increased the time budgets and fixed the final-answer repair path. One fresh check of the team question returned the correct lead and count with evidence in about38seconds. I have not rerun the whole evaluation. The next step is to improve retrieval and rerun the affected cases. The data and display boundaries are implemented, but this final evaluation shows that the reasoning flow still needs work.”
 
 ## Before recording
 

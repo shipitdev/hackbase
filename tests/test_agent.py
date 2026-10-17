@@ -3,7 +3,9 @@ import json
 import pytest
 
 from app.agent import Copilot
+import app.agent as agent_module
 from app.errors import AppError
+from app.provider import CompatibleProvider
 
 CARD = 'root = AnswerLayout([card])\ncard = ResultCard("R1", "Status", ["asset_id", "producing"])'
 
@@ -20,7 +22,7 @@ class Knowledge:
 
 
 class Memory:
-    def __init__(self): self.results = {}; self.changes = []
+    def __init__(self): self.results = {}; self.changes = []; self.traces = []
     def load_context(self, *args): return {"messages": [], "references": []}
     def save_result(self, user, thread, result):
         result = {**result, "result_id": "R1", "thread_id": thread, "user_id": user}
@@ -29,7 +31,7 @@ class Memory:
     def get_result(self, user, rid):
         if rid not in self.results: raise AppError('not_found', 'Result not found', 404)
         return self.results[rid]
-    def save_trace(self, *args): pass
+    def save_trace(self, *args): self.traces.append(args)
 
 
 class Scripted:
@@ -64,6 +66,46 @@ def test_invalid_visual_column_gets_one_repair_instead_of_fake_data():
     bad = final(ui='root = AnswerLayout([card])\ncard = ResultTable("R1", "Wrong", ["invented"])')
     copilot = Copilot(Knowledge(), Memory(), Scripted([tool('run_sql', {'sql':'SELECT * FROM effective_inspections'}), bad, final()]))
     assert copilot.answer({'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'}, 'Status?')['ui'] == CARD
+
+
+def test_failed_answer_repair_reports_safe_validation_reason_and_records_it():
+    invalid = final(ui=None, entity_ids=['WELL-9999'])
+    memory = Memory()
+    answer = Copilot(Knowledge(), memory, Scripted([invalid, invalid])).answer(
+        {'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'}, 'Status?'
+    )
+    reason = 'Discussed well IDs need supporting result/evidence'
+    assert answer['status'] == 'partial'
+    assert reason in answer['limitations'][0]
+    assert any(trace[3] == 'answer_validation' and reason in trace[5]['error'] for trace in memory.traces)
+    assert 'WELL-9999' not in answer['answer']
+
+
+def test_schema_failure_reports_only_known_field_names():
+    invalid = {"role": "assistant", "content": "{}"}
+    answer = Copilot(Knowledge(), Memory(), Scripted([invalid, invalid])).answer(
+        {'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'}, 'Status?'
+    )
+    assert answer['status'] == 'partial'
+    assert 'Draft did not match the answer schema' in answer['limitations'][0]
+    assert 'answer' in answer['limitations'][0] and 'ui' in answer['limitations'][0]
+
+
+def test_final_two_rounds_are_reserved_for_no_tool_synthesis_and_repair():
+    class Inspecting(Scripted):
+        def __init__(self, responses): super().__init__(responses); self.offered_tools = []
+        def complete(self, messages, tools, **kwargs):
+            self.offered_tools.append(tools)
+            return super().complete(messages, tools, **kwargs)
+
+    clarification = final(response_kind='clarification', answer='Which date should I use?', ui=None, citation_refs=[], entity_ids=[])
+    provider = Inspecting([tool('memory_read', {}) for _ in range(6)] + [clarification])
+    answer = Copilot(Knowledge(), Memory(), provider).answer(
+        {'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'}, 'Those wells?'
+    )
+    assert answer['answer'] == 'Which date should I use?'
+    assert provider.offered_tools[:6] == [provider.offered_tools[0]] * 6
+    assert provider.offered_tools[6] == []
 
 
 def test_missing_evidence_cannot_become_completed_factual_answer():
@@ -217,6 +259,17 @@ def test_second_oversized_tool_batch_stops_after_one_repair_without_writes():
     assert 'after its one repair attempt' in answer['limitations'][0]
 
 
+def test_oversized_batch_repair_does_not_consume_answer_repair():
+    calls=[{"id":f"call-{i}","type":"function","function":{"name":"memory_read","arguments":"{}"}} for i in range(9)]
+    invalid = final(ui=None, entity_ids=['WELL-9999'])
+    provider = Scripted([{"role":"assistant","tool_calls":calls}, invalid, invalid])
+    answer = Copilot(Knowledge(), Memory(), provider).answer(
+        {'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'}, 'Status?'
+    )
+    assert answer['status'] == 'partial'
+    assert 'Discussed well IDs need supporting result/evidence' in answer['limitations'][0]
+
+
 def test_prompt_teaches_sqlite_syntax_and_concise_cited_prose():
     class Inspecting(Scripted):
         def complete(self, messages, tools, **kwargs):
@@ -239,6 +292,41 @@ def test_partial_answer_explains_failure_and_keeps_available_metadata():
     assert answer['latency_ms'] is not None
     assert answer['usage']=={}
     assert answer['served_models']==[]
+
+
+def test_answer_timeout_is_configurable_and_caps_each_provider_call(monkeypatch):
+    monkeypatch.setenv("ANSWER_TIMEOUT_SECONDS", "2")
+    clock = [0.0]
+    monkeypatch.setattr(agent_module.time, "monotonic", lambda: clock[0])
+
+    class SlowScripted(Scripted):
+        timeout_seconds = 90.0
+        def __init__(self): self.timeouts = []
+        def complete(self, messages, tools, **kwargs):
+            self.timeouts.append(kwargs["timeout"])
+            clock[0] = 3.0
+            return {"message": tool("run_sql", {"sql": "SELECT * FROM effective_inspections"})}
+
+    provider = SlowScripted()
+    answer = Copilot(Knowledge(), Memory(), provider).answer(
+        {"user_id": "U-1", "thread_id": "T1", "request_id": "q", "analysis_date": "2026-10-16"}, "Status?"
+    )
+    assert provider.timeouts == [2.0]
+    assert answer["status"] == "partial"
+    assert "overall answer time limit" in answer["limitations"][0]
+
+
+def test_answer_rejects_invalid_total_timeout(monkeypatch):
+    monkeypatch.setenv("ANSWER_TIMEOUT_SECONDS", "nan")
+    with pytest.raises(AppError, match="ANSWER_TIMEOUT_SECONDS"):
+        Copilot(Knowledge(), Memory(), Scripted([]))
+
+
+def test_timeout_defaults_preserve_existing_budgets(monkeypatch):
+    monkeypatch.delenv("LLM_CALL_TIMEOUT_SECONDS", raising=False)
+    monkeypatch.delenv("ANSWER_TIMEOUT_SECONDS", raising=False)
+    assert CompatibleProvider("local", "http://localhost", "").timeout_seconds == 45.0
+    assert Copilot(Knowledge(), Memory(), Scripted([])).timeout_seconds == 120.0
 
 
 def test_provider_error_carries_only_safe_aggregate_evaluation_metadata():
