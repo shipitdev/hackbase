@@ -37,5 +37,5 @@ See tasks/reports/E1-reviewed-results.md for the sample18-question evaluation. I
 - Export a readable 2–3 page write-up and record a narrated demo of at most5minutes.
 - Verify repository, video and write-up links; submit only with user authorization.
 
-## Latest E4 rerun
-All21turns recaptured with R3code:12HTTP200partial,9upstreamHTTP400errors surfacedas502, no504. Tenpartialscontext-limited; onlyQ1refusal/Q9-2teamfacts supported,19unverifiable. The two-page PDF and full local answer bundle are authoritative submission artifacts. Possible final-synthesis provider compatibility issue is being repaired separately; no post-E4accuracyclaim.
+## Evaluation status
+The completed E4 run captured all 21 turns: 12 HTTP 200 partial responses and 9 HTTP 502 errors. Only Q1 and Q9-2 were judged source-supported (2/21 verified answer coverage, not an accuracy rate). The later context-pipeline run was still in progress at the write-up update: 12/21 attempted, 9 HTTP 200 partials, 2 HTTP 502 errors, and 1 request pending. The new responses have not completed evidence review; these interim counts do not establish an accuracy improvement. See `context-pipeline-status.md`.

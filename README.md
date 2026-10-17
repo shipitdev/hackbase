@@ -76,6 +76,8 @@ The final questions are in the official dataset's `test-data/final-questions.md`
 
 The [E4 report](tasks/reports/E4-final-rerun.md) records the outputs, limitations and usage lower bound. [Independent source checks](tasks/reports/E4-source-oracles.md) provide reference results; they are not copilot answers. Earlier runs remain separate.
 
+A post-context-change evaluation is currently in progress. At the write-up snapshot, 16/21 turns had been attempted: 11 partial HTTP 200 responses, four HTTP 502 errors, and one pending request. These interim responses have not completed evidence review, so the counts do not establish improved accuracy. Its private captures are under ignored `data/evaluations/context-pipeline-final/`. To start a fresh run in a new workspace, use `python3 scripts/evaluate_context_pipeline.py --run`; use `--resume` only for an existing interrupted run. It makes paid inference calls and does not change the active database.
+
 After E4, the provider request was changed to retain tool definitions while using `tool_choice: none` for final synthesis. That repair has offline test evidence, not a post-fix full-suite score. A later context repair bounds tool previews, deduplicates search excerpts, supports evidence paging, and compacts older tool cycles at72,000 characters while keeping saved results and source references. It passed a realistic offline replay and 75 focused checks. A subsequent single Q4 check returned in 180.7 seconds without a context-limit failure or timeout, but both final drafts failed JSON validation; no usable table was returned. This is not an answer-quality pass. The E4 results must not be presented as a test of these later changes. Increasing timeouts does not solve context growth. No automatic provider retries or model fallbacks are enabled. The development proxy waits up to 300 seconds.
 
 ## Checks
@@ -90,7 +92,7 @@ Offline tests use scripted providers and temporary databases. They check behavio
 
 ## Submission files
 
-- [Two-page write-up PDF](submission/asset-intelligence-writeup.pdf): system design with the SVG on page 1; observed E4 answers and failures on page 2. The PDF pagination has been checked.
+- [Two-page write-up PDF](submission/asset-intelligence-writeup.pdf): system design with the SVG on page 1; completed E4 results and a clearly labeled in-progress evaluation snapshot on page 2. The PDF pagination has been checked.
 - [Editable Word companion](submission/asset-intelligence-writeup.docx): the same content; Word/Google Docs pagination may vary.
 - [Video pitch script](submission/pitch-script.md) and [upload instructions](submission/UPLOAD-README.md).
 - The local `submission/flytbase-submission.zip` additionally contains all 21 captured answers, visual specifications, saved result rows and reports. This ZIP is intentionally ignored by Git; it excludes keys, runtime databases and private tool traces.
