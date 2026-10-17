@@ -65,7 +65,12 @@ def _collect(root):
                 if row.get("asset_id") != metadata["asset_id"]: raise AppError("invalid_request", f"Wrong asset link in {folder / filename}")
                 add(kind, row, folder / filename)
                 if kind == "context" and row.get("note_type") == "correction" and row.get("inspection_id") and ("not a crude spill" in row.get("text", "").lower() or "not a spill" in row.get("text", "").lower()):
-                    records.append(("source_correction", row["inspection_id"], metadata["asset_id"], json.dumps({"field":"spill_detected","value":False,"source_ref":row["note_id"]},sort_keys=True), str((folder / filename).relative_to(root))))
+                    records.append(("source_correction", f"{row['inspection_id']}:spill_detected", metadata["asset_id"], json.dumps({"inspection_id":row["inspection_id"],"field":"spill_detected","value":False,"source_ref":row["note_id"]},sort_keys=True), str((folder / filename).relative_to(root))))
+                if kind == "context" and row.get("note_type") == "data_correction":
+                    field = row.get("field")
+                    if field not in {"wellhead_temp_c", "ambient_temp_c", "spill_detected", "spill_est_volume_bbl"} or not row.get("inspection_id") or "corrected_value" not in row:
+                        raise AppError("invalid_request", f"Invalid data correction in {row.get('note_id', folder)}")
+                    records.append(("source_correction", f"{row['inspection_id']}:{field}", metadata["asset_id"], json.dumps({"inspection_id":row["inspection_id"],"field":field,"value":row["corrected_value"],"original_value":row.get("original_value"),"valid_from":row.get("valid_from"),"valid_to":row.get("valid_to"),"source_ref":row["note_id"]},sort_keys=True), str((folder / filename).relative_to(root))))
         for row in _jsonl(folder / "maintenance.jsonl"):
             filename = row.get("report_file")
             if not filename: continue
@@ -164,6 +169,14 @@ def _validate_merged(records):
                 if row.get(key): iso(row[key],owner)
             trigger=ref("inspection",row.get("inspection_id"),owner)
             if trigger and trigger.get("asset_id")!=row.get("asset_id"): raise AppError("invalid_request",f"Wrong inspection owner in {owner}")
+            if row.get("note_type")=="data_correction":
+                field=row.get("field"); value=row.get("corrected_value")
+                if field not in {"wellhead_temp_c","ambient_temp_c","spill_detected","spill_est_volume_bbl"} or not trigger or "original_value" not in row or "corrected_value" not in row:
+                    raise AppError("invalid_request",f"Invalid data correction in {owner}")
+                if field=="spill_detected":
+                    if not isinstance(value,bool): raise AppError("invalid_request",f"Invalid data correction in {owner}")
+                elif not isinstance(value,(int,float)) or isinstance(value,bool) or not math.isfinite(value) or (field=="spill_est_volume_bbl" and value<0):
+                    raise AppError("invalid_request",f"Invalid data correction in {owner}")
 
 
 def load_dataset(root, knowledge_path):

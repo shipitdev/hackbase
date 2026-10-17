@@ -24,7 +24,7 @@ load_dotenv(ROOT / ".env", override=False, interpolate=False)
 
 def create_app(*, knowledge=None, knowledge_path=None, memory_path=None, provider=None, analysis_date=None):
     app = FastAPI(title="Asset Intelligence Copilot", version="0.1.0")
-    analysis = analysis_date or os.getenv("ANALYSIS_DATE", "2026-10-17")
+    analysis = analysis_date or os.getenv("ANALYSIS_DATE", "2027-01-15")
     date.fromisoformat(analysis)
     data_dir = Path(os.getenv("DATA_DIR", str(ROOT / "data")))
     shared_path = Path(knowledge_path or data_dir / "knowledge.sqlite")
@@ -38,7 +38,7 @@ def create_app(*, knowledge=None, knowledge_path=None, memory_path=None, provide
     def store():
         if app.state.knowledge is None:
             if not shared_path.is_file():
-                raise AppError("not_ready", "Load a dataset first: python3 -m app.load dataset/sample-data --db data/knowledge.sqlite", 503)
+                raise AppError("not_ready", "Load a dataset first: python3 -m app.load dataset/test-data/dataset --db data/knowledge.sqlite", 503)
             from app.store import KnowledgeStore
             app.state.knowledge = KnowledgeStore(shared_path, analysis_date=analysis)
         return app.state.knowledge

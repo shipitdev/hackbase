@@ -9,7 +9,7 @@ Use Python 3.11+ and install the dependencies in a virtual environment:
 ```sh
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
-.venv/bin/python -m app.load dataset/sample-data --db data/knowledge.sqlite
+.venv/bin/python -m app.load dataset/test-data/dataset --db data/knowledge.sqlite
 .venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
@@ -26,7 +26,7 @@ The native OpenUI validator also needs Node and the installed frontend dependenc
 
 Open [API documentation](http://127.0.0.1:8000/docs) or `/api/health`. Loading the dataset does not need a model key. The server reports `ready` for data availability and `chat_ready` separately for provider configuration.
 
-If the dataset is absent, obtain the [official dataset repository](https://github.com/FlytBaseAILabs/flytbase-ahc-swe-asset-intelligence-dataset) locally and point the loader at its `sample-data` directory.
+If the dataset is absent, obtain the [official dataset repository](https://github.com/FlytBaseAILabs/flytbase-ahc-swe-asset-intelligence-dataset) locally and point the loader at its `test-data/dataset` directory.
 
 ## Runtime model
 
@@ -85,3 +85,5 @@ python3 scripts/preflight_dataset.py /path/to/released-data --base-db data/knowl
 ```
 
 Both output paths must be new. Review counts, report coverage, references and collisions before loading active data. Follow [the backup and promotion runbook](docs/released-data.md); preserve shared corrections and private memory. The released dataset has not been validated before arrival.
+
+Final release: 600 wells, 7 areas; set `ANALYSIS_DATE=2027-01-15`. Existing sample databases must be backed up and replaced with a fresh load because the release revises older records. See [release runbook](docs/released-data.md).

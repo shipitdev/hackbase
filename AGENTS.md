@@ -30,7 +30,7 @@ The official files in `dataset/` define the challenge. `docs/` contains the revi
 
 ## Non-negotiable behavior
 
-- Calculation date: **2026-10-17**. Conversation dates and planned-work dates are separate.
+- Calculation date: **2027-01-15**, per the final dataset release. Historical sample fixtures retain their original dates. Conversation dates and planned-work dates are separate.
 - Calculate production from temperature difference and downtime from inspections. Use the source manuals/SOPs, not outside oil-field rules.
 - Keep originals and apply accepted corrections to later calculations for all users, only at their stated scope. T350 pump-jack feedback does not change T200 or other equipment.
 - Shared well facts are distinct from private chats. Enforce private access in code; the model cannot choose a different user for memory reads.

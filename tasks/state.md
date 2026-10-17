@@ -1,18 +1,18 @@
 # Orchestrator state
 
-Updated 17 October 2026. **Final sprint implemented: six native visuals + generated-output resize fix + released-data preflight. Await released dataset/questions.**
+Updated 17 October 2026. **Final dataset activated; Luna high running the 11 final scenarios / 21 turns.**
 
 ## Stable decisions
 
-- Sol sole orchestrator; Luna high for backend/data/debugging, medium for bounded UI. Exact file ownership, fresh scoped context, no child agents/status polling. Workers notify completion. All latest assignments returned; no active file owners.
-- Analysis date **2026-10-17**; conversation time separate. Historical16October fixtures retained.
+- Sol sole orchestrator; Luna high for backend/data/debugging, medium for bounded UI. Exact file ownership, fresh scoped context, no child agents/status polling. Workers notify completion. Active final evaluation ownership is listed below.
+- Analysis date **2027-01-15**; conversation time separate. Historical16October fixtures retained.
 - Runtime DigitalOcean `inference-router`, budget preference, user budget$25 (no hard cap). Key only ignored.env, never print/publish. No runtime model change or paid test in final sprint.
 - Direct model-generated OpenUI Lang; same-library schema/prompt. No model-authored rows or arbitrary browser code/actions. Root/server owns calculations/results/private identity. Demo user picker is not public authentication.
 - GitHub shipitdev/hackbase; dataset/,opencode/ preserved/ignored. Runtime databases/chats/screenshots/keys and installed .agents/skills ignored. Taste skill installed; original v1 app guidance used because default v2 excludes apps.
 
 ## Implemented
 
-FastAPI/SQLite corrected restricted queries, reports/rules/evidence, scoped shared corrections preserving originals, private chats/results, idempotent retries. Original sample200wells/39567inspections/5665maintenance/1509readable reports loaded. Loader rejects collisions and preserves history/feedback.
+FastAPI/SQLite corrected restricted queries, reports/rules/evidence, scoped shared corrections preserving originals, private chats/results, idempotent retries. Final release600wells/125198inspections/17415maintenance/4437readable reports loaded; original sample backed up. Loader rejects collisions and preserves history/feedback.
 
 Native six-view contract in docs/contracts.md: Card/Table/Bar/Line/Map/Heatmap, max6 static views. Official Node parser, same-user/thread/revision and full-row numeric/coordinate/boolean/cell checks; only server-saved values hydrate. Current prompt teaches SQLite and explicit heatmap zero-grid queries. One shared bounded repair for oversized tool batches/final validation,8rounds/120s/96k context retained. Original provider HTTP errors expose only safe accumulated model/usage/latency metadata.
 
@@ -28,7 +28,7 @@ React chat: real users/threads/history, source panel, conflict/limitation states
 
 ## Release readiness and immediate next actions
 
-1. When source arrives, read docs/released-data.md. Run `python3 scripts/preflight_dataset.py <root> --db <new-stage.sqlite>`; also stage with `--base-db data/knowledge.sqlite`. Candidate-alone and merged counts/coverage/links/collisions reviewed before active load. Active knowledge+memory backed up consistently; no silent overwrite of conflictingIDs or feedback.
+1. Final baseline activated from official commit009e2b5; see docs/released-data.md. Version dataset-7207fefc8284, revision1, analysis2027-01-15. Both databases backed up; private memory counts verified unchanged.
 2. Delegate targeted live checks/new final questions with isolated/resumable evidence capture. Preserve scenario dependencies and private history. Do not let old E1 --resume silently represent a new run.
 3. Complete submission/writeup.md from actual results, select/add license, export2–3pages, record<=5minute demo, verify links. No event submission without authorization.
 
@@ -41,3 +41,9 @@ Current plan tasks/plan.md final-priorities section; checklist tasks/todo.md. Re
 
 ## Accepted F7 Send-control fix
 Luna medium implemented shrinkable grid row/sidebar and bounded scrollable error text; Send/Sending label retained with existing accessible name. Root removed hard320px body min-width that clipped zoomed narrow views.20browserchecks across empty/typed/busy/long-error/generated-table at CSS widths256/312/614/1152 pass; final frontend production build passes. No paid model calls; no backend restart needed. All F7 files returned. Report tasks/reports/F7-send-button.md.
+
+## Final release activation in progress
+- Official dataset commit `009e2b5`; final release 600 wells/7 areas, today 2027-01-15, 11 ordered multi-turn questions.
+- Backup: ignored `data/backups/before-final-20261017-164055/`; both SQLite stores preserved; zero shared changes at backup. Backend restarted PID32961, exec session36170, health ready/chat_ready.
+- D2 compatibility accepted; ownership returned. T500 thresholds, source data corrections, history/status/raw payload columns integrated. Worker8 focused tests pass; root release test1pass, agent20pass, API4pass; frontend build pass.
+- Ownership active: final_eval Luna high owns scripts/evaluate_final.py, tasks/reports/E3-final-evaluation.md and private data/evaluations/final-release/. Root authorized paid run after activation. Snapshot isolated, ordered, no automatic retries; root does not run paid evaluation.

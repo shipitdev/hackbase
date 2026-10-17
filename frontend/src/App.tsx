@@ -211,7 +211,7 @@ export default function App() {
       <header className="topbar">
         <button ref={navTrigger} className="mobile-menu" aria-label="Open navigation" onClick={() => setMobileNav(true)}>☰</button>
         <div><span className="eyebrow">ASSET INTELLIGENCE</span><h1>{selected ? `${selected.name}’s workspace` : "Workspace"}</h1></div>
-        <div className="date-chip"><span>Calculation date</span><strong>{health?.analysis_date ?? "2026-10-17"}</strong></div>
+        <div className="date-chip"><span>Calculation date</span><strong>{health?.analysis_date ?? "Loading…"}</strong></div>
       </header>
 
       <section ref={conversationRef} className="conversation" aria-label="Conversation" aria-live="polite">

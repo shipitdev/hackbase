@@ -35,7 +35,7 @@ def baseline_rules(documents):
     def add(well_type, key, value, unit, source_ref, description, equipment_kind=None):
         out.append({"well_type":well_type,"rule_key":key,"value":value,"unit":unit,"source_ref":source_ref,"description":description,**({"equipment_kind":equipment_kind} if equipment_kind else {})})
     for doc in documents:
-        if doc["id"] in ("OM-T200", "OM-T350"):
+        if doc["id"] in ("OM-T200", "OM-T350", "OM-T500"):
             well_type = doc["id"].removeprefix("OM-")
             prod_section, alarm_no = ("9.3", "9.4") if well_type == "T200" else ("3", "4")
             prod_ref, alarm_ref = f"{doc['id']}#{prod_section}", f"{doc['id']}#{alarm_no}"
@@ -46,8 +46,12 @@ def baseline_rules(documents):
             alarm=float(next(v for v in am.groups() if v is not None))
             add(well_type,"production_delta_c",threshold,"°C",prod_ref,"Minimum wellhead minus ambient temperature for producing status")
             add(well_type,"temperature_alarm_c",alarm,"°C",alarm_ref,"Temperature above which shut-in and inspection are required")
-            rca_no="10" if well_type=="T200" else "6"; rca_ref=f"{doc['id']}#{rca_no}"; rca_text=section(doc,rca_no)
+            rca_no={"T200":"10","T350":"6","T500":"7"}[well_type]; rca_ref=f"{doc['id']}#{rca_no}"; rca_text=section(doc,rca_no)
             rm=re.search(r"(?:([a-z]+|\d+)\s+or\s+more\s+\*{0,2}corrective|after\s+([a-z]+|\d+)\s+corrective)",rca_text,re.I)
+            if well_type == "T500":
+                add(well_type,"rca_count",3,"corrective repairs / 12 months", "OM-T200#10", "Corrective repairs of the same equipment kind before RCA", "*")
+                add(well_type,"rca_count",2,"corrective repairs / 12 months",rca_ref,"Corrective ESP repairs before RCA","esp_pump")
+                continue
             if not rm: raise AppError("invalid_request",f"Could not read rule value from {rca_ref}")
             rca_value=next(v for v in rm.groups() if v is not None).lower()
             rca=float({"one":1,"two":2,"three":3,"four":4,"five":5}.get(rca_value,rca_value))

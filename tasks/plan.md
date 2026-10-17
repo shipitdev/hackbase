@@ -107,3 +107,9 @@ This revision follows the user’s orchestrator-led approach. The user subsequen
 4. Delegate targeted real question checks after integration, then released final questions. Save every outcome promptly. Do not spend remaining time model-shopping or restyling.
 5. Package license, reproducible README, write-up/results and <=5minute demo. No submission/publishing outside previously authorized repository sync.
 Current assignments and exact paths are recorded in state; old checklist remains the full completion bar. Estimated implementation window20–30minutes, then released-data work takes priority; these are planning estimates, not promises.
+
+## Final release run (17 October build session)
+1. Activate official complete baseline commit009e2b5 with calculation date2027-01-15, retaining private history and backed-up originals.
+2. Accept bounded release compatibility fixes and focused offline checks.
+3. Luna high runs 11 ordered final scenarios/21 turns in an isolated shared evaluation state, saves all answers/visuals and semantic limitations. No automatic paid retries.
+4. Review findings; repair only demonstrated general failures, then target reruns explicitly. Final submission claims follow observed evidence.
