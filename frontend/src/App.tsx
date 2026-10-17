@@ -32,7 +32,7 @@ export default function App() {
   const evidenceClose = useRef<HTMLButtonElement>(null);
   const evidenceTrigger = useRef<HTMLElement | null>(null);
   const hadMobileNav = useRef(false);
-  const endRef = useRef<HTMLDivElement>(null);
+  const conversationRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     let live = true;
@@ -96,7 +96,10 @@ export default function App() {
     api.messages(userId, threadId).then((list) => turn.current === epoch && setMessages(list)).catch((error) => turn.current === epoch && setPageError(error.message));
   }, [userId, threadId]);
 
-  useEffect(() => { endRef.current?.scrollIntoView({ block: "end" }); }, [messages, busy]);
+  useEffect(() => {
+    const conversation = conversationRef.current;
+    if (conversation) conversation.scrollTo({ top: conversation.scrollHeight });
+  }, [messages, busy]);
 
   async function chooseUser(next: string) {
     if (next === userId) return;
@@ -211,7 +214,7 @@ export default function App() {
         <div className="date-chip"><span>Calculation date</span><strong>{health?.analysis_date ?? "2026-10-17"}</strong></div>
       </header>
 
-      <section className="conversation" aria-label="Conversation" aria-live="polite">
+      <section ref={conversationRef} className="conversation" aria-label="Conversation" aria-live="polite">
         {!messages.length && !busy && <div className="welcome">
           <span className="welcome-kicker">FIELD OPERATIONS · {health?.ready ? "READY" : "CONNECTING"}</span>
           <h2>What would you like<br />to inspect?</h2>
@@ -223,7 +226,6 @@ export default function App() {
             {message.role === "assistant" ? <><div className="assistant-label"><span className="assistant-mark">AI</span><span>Asset Intelligence</span></div><AnswerView answer={message.answer ?? { answer: message.text }} onSource={(source) => void openEvidence(source)} /></> : <p className="user-copy">{message.text}</p>}
           </article>)}
           {busy && <div className="pending"><span className="pending-mark">AI</span><div><strong>Reviewing the records</strong><span className="skeleton" /><span className="skeleton short" /></div></div>}
-          <div ref={endRef} />
         </div>
       </section>
       <div className="composer-wrap">

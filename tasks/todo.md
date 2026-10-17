@@ -108,3 +108,10 @@ Before T1, Sol records the contract revision, assignments and next action in [st
 - [ ] Check: submission receipt/status and every submitted link; keep the confirmation.
 
 **Done:** the submission is accessible, and claimed results match what the app actually demonstrated.
+
+## Immediate final sprint
+- [x] F4: generated-output resizing/scroll/composer regression fixed and browser checked after render and resize.
+- [x] F5: all six native visuals plus server type/ownership/revision validation; combined views and map fallback checked.
+- [x] D1: released-data preflight and safe staging/backup runbook; no active-data mutation before source review.
+- [ ] Targeted delegated live checks, then final released-data questions with captured outcomes.
+- [ ] Submission license/write-up/demo/run instructions finalized; only observed successes claimed.

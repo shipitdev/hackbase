@@ -133,3 +133,13 @@ Browser uses same-origin `/api` via Vite proxy to localhost:8000. No client key,
 Provider/transport failures retain their HTTP error status and `error.code`/`error.message`. Optional top-level `evaluation_metadata` includes only `served_models`, numeric `usage`, and `latency_ms` accumulated before the failure. Missing usage for the failed call is unknown, not zero billed usage. No provider payloads, credentials or private traces are exposed. The server never automatically retries a paid provider call; UI same-request retries remain explicit and deduplicated.
 
 The SQLite tool limit remains eight calls per batch, eight model rounds, 120 seconds, and 96,000 context characters. An oversized batch executes no tools and gets one protocol-matched repair response; a second oversized batch ends with an explicit partial answer. The same one-repair allowance applies to final-answer validation.
+
+## Six-view native signatures — final implementation slice
+
+Extend the same static OpenUI library (max six views) with:
+- `ResultBar(resultId, title, category, value)` → mapping `{category,value}`.
+- `ResultLine(resultId, title, x, series, inactive?)` → `{x,series,inactive?}`; inactive marks stopped readings separately from color.
+- `ResultMap(resultId, title, lat, lon, label, details?)` → `{lat,lon,label,details?}`; coordinate table and tile-failure fallback mandatory.
+- `ResultHeatmap(resultId, title, x, y, value)` → `{x,y,value}`; zero is explicit, missing combinations remain unknown.
+
+All arguments reference literal issued result IDs and existing columns. Keep Card/Table signatures unchanged. Node bridge returns the same internal `{type,result_id,title,mapping}` descriptors for all six; no model-authored row arrays. Parser enforces structure/references; Python validates full saved data numeric types, finite numbers, boolean markers, coordinate ranges and completeness. It passes only column names and capped dummy rows to the parser to avoid copying large result values. Widgets render only trusted server-owned rows and expose accessible supporting tables. No arbitrary URLs or executable code from the model.

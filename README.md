@@ -1,6 +1,6 @@
 # Asset Intelligence Copilot
 
-Python/FastAPI backend for the FlytBase asset-intelligence challenge. It loads the real sample data, runs restricted analytics tools, keeps shared corrections separate from private chats, and returns source-backed answers with model-generated OpenUI cards and tables. The React chat prototype uses the same private history and evidence APIs.
+Python/FastAPI backend for the FlytBase asset-intelligence challenge. It loads the real sample data, runs restricted analytics tools, keeps shared corrections separate from private chats, and returns source-backed answers with model-generated OpenUI cards, tables, line/bar charts, maps and heatmaps. The React chat prototype uses the same private history and evidence APIs.
 
 ## Run locally
 
@@ -67,10 +67,21 @@ npm --prefix frontend ci
 npm --prefix frontend run check:openui
 ```
 
-This checks native OpenUI parsing, result-backed Card/Table widgets, schema/prompt drift, rejected dynamic programs, and ReactDOM server rendering. The chat prototype supports these two views; line/bar/map/heatmap remain the next slice. See the [native OpenUI plan](docs/05-frontend-openui.md). Dependencies are pinned; a targeted KaTeX override fixes the reported low-severity audit chain.
+This checks native OpenUI parsing, result-backed Card/Table widgets, schema/prompt drift, rejected dynamic programs, and ReactDOM server rendering. The shared library now supports all six required views, including stopped-reading markers, map tile fallback and explicit heatmap zeros versus unknowns. See the [native OpenUI plan](docs/05-frontend-openui.md). Dependencies are pinned; a targeted KaTeX override fixes the reported low-severity audit chain.
 
 The opt-in real backend check is `python3 scripts/check_backend_question.py`. It can report `pass_with_limitations` when the answer's data and sources pass but observation/provenance caveats remain. It uses the configured paid provider and isolated temporary state.
 
-Build the browser bundle with `npm --prefix frontend run build`. This creates `frontend/dist`; it does not deploy the application. `npm --prefix frontend run preview` previews that build with the local API proxy. Streaming and the remaining four data displays are not implemented in this prototype.
+Build the browser bundle with `npm --prefix frontend run build`. This creates `frontend/dist`; it does not deploy the application. `npm --prefix frontend run preview` previews that build with the local API proxy. Streaming is not implemented. All six views have parser/rendering and browser fixture checks; their selection and answer accuracy still need final live evaluation.
 
 The user-requested [taste-skill](https://github.com/Leonxlnx/taste-skill) bundle is installed locally under `.agents/skills/` (ignored). Its original frontend design guidance informs the app's typography, spacing, states and responsive layout; no marketing-page animations or additional UI framework were added. `skills-lock.json` records the source for reinstalling with `npx skills add Leonxlnx/taste-skill`.
+
+## Released test data
+
+Stage the received dataset without changing the active app:
+
+```sh
+python3 scripts/preflight_dataset.py /path/to/released-data --db /tmp/released-alone.sqlite
+python3 scripts/preflight_dataset.py /path/to/released-data --base-db data/knowledge.sqlite --db /tmp/released-merged.sqlite
+```
+
+Both output paths must be new. Review counts, report coverage, references and collisions before loading active data. Follow [the backup and promotion runbook](docs/released-data.md); preserve shared corrections and private memory. The released dataset has not been validated before arrival.

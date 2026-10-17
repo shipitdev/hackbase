@@ -103,3 +103,9 @@ P0 is now implemented. Run `npm --prefix frontend run check:openui` to check gen
 - [OUI-1 announcement](https://www.openui.com/blog/oui-1): a UI-specialized model; it is separate from adopting the OpenUI toolkit. No assumption that it is available through our DigitalOcean account.
 
 Backend Q1 data/source acceptance is pass_with_limitations after independent revalidation of an actual live answer. The checker accepts equivalent caveat wording while preserving strict numeric/time/citation/result checks; the response is not forced to complete. This does not establish all18 questions or native model-generated OpenUI output. No broad evaluation result or browser rendering is claimed. A successful small router smoke proves tool connectivity, not domain correctness or native OpenUI generation quality.
+
+## Final sprint acceptance
+
+All six native result-backed views are now implemented. The line supports multiple series, gaps and stopped markers; bar reuses OpenUI; map uses Leaflet with ResizeObserver and table/tile-error fallback; heatmap distinguishes zero from missing combinations. Root integrated full-row Python numeric/coordinate/marker/cell checks. Card/Table signatures and saved data remain compatible. Charts/tables stack at full answer width; wide line plots and tables scroll within the answer rather than expanding the page.
+
+Browser fixtures combine all six with long20-column data at320/390/768/1024/1440px, then resize back. Body size stays at viewport, composer remains visible, scrolling stays inside the chat. Three map points/popup and real tiles work; blocked tiles show status and readable coordinate table. No paid model call was used to establish these visual checks. Final model selection/accuracy on released questions remains unverified.

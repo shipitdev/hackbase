@@ -9,7 +9,7 @@ from pydantic import Field, ValidationError
 
 from app.contracts import AnswerDraft, StrictModel
 from app.errors import AppError
-from app.openui import validate_ui
+from app.openui import validate_ui, validate_view_data
 
 
 class SqlArgs(StrictModel):
@@ -50,7 +50,7 @@ Read relevant shared notes and report evidence to explain reasons/conflicts. Sou
 SQL uses SQLite, not PostgreSQL: use `date(column)` or `date(?)` (put the date in `params`), `lower(column) LIKE lower(?)` for case-insensitive matching, and `?` placeholders for every value. Example: `SELECT asset_id FROM effective_inspections WHERE date(inspected_at) BETWEEN date(?) AND date(?)` with `params: ["start-date", "end-date"]`; for a rolling window use `date(inspected_at) >= date(?, '-89 days') AND date(inspected_at) <= date(?)`. Do not use `ILIKE`, `::date`, typed `DATE '...'` literals, interpolate parameters, or send multiple statements. Send one SELECT or CTE per call. Never call more than eight tools in one batch; prefer a single focused query when possible. Use only the supplied schema names and columns.
 Distinguish breached, possible breach/no recorded evidence, pending, met/closed and unknown. Missing/unparsed evidence is never zero or compliant. A future deadline is not overdue. Preserve disagreements with attribution and sources; ask for clarification when needed.
 Private memory belongs only to the selected user. For prior discussions use memory_read and exact saved IDs/dates; do not borrow another user's history. Conversation time is different from the analysis date. Do not answer an ambiguous 'those wells' from a guessed set.
-Return ONLY a JSON object with response_kind (factual or clarification), answer, ui (native OpenUI Lang string or null), citation_refs, conflicts, limitations, entity_ids. Use null UI for short answers, clarifications, or when a visual is unnecessary. For visuals, compose only the supplied ResultCard and ResultTable signatures using the exact saved result IDs and column names. Never include copied values, JSON component manifests, code, queries, mutations, actions, functions or dynamic expressions. Keep the UI within six views. The generated OpenUI system prompt below defines exact syntax.
+Return ONLY a JSON object with response_kind (factual or clarification), answer, ui (native OpenUI Lang string or null), citation_refs, conflicts, limitations, entity_ids. Use null UI for short answers, clarifications, or when a visual is unnecessary. For visuals, compose the supplied ResultCard, ResultTable, ResultBar, ResultLine, ResultMap and ResultHeatmap signatures using the exact saved result IDs and column names. Never include copied values, JSON component manifests, code, queries, mutations, actions, functions or dynamic expressions. Keep the UI within six views. Honor requested chart/map/heatmap types. For heatmaps generate the complete area/month grid in SQL (CROSS JOIN the area and month sets, LEFT JOIN counts, COALESCE missing counts to zero). For lines include the stopped-reading boolean marker when requested. The generated OpenUI system prompt below defines exact syntax.
 Keep prose concise: state the result and its key qualification, and don't repeat values already shown in a table or card. Keep citations, attribution and uncertainty caveats.
 citation_refs lists actual source IDs, rule-ID#section or owned result IDs. Cite underlying records/rules as well as aggregate result evidence. conflicts items have claim,evidence_refs,status(unconfirmed|resolved). entity_ids contains only well IDs actually discussed. If evidence/search/output is incomplete, describe it in limitations. No invented sources, fines, images, sample-answer routes or completion claims. For conversation recall cite saved private message_id values. If target/date is ambiguous, use response_kind clarification and ask a short question instead of changing data.
 """
@@ -157,12 +157,9 @@ class Copilot:
                 raise AppError("forbidden", "Visual result belongs to another conversation", 403)
             if hasattr(self.knowledge, "info") and result.get("knowledge_revision") != self.knowledge.info().get("knowledge_revision"):
                 raise ValueError("Visual result predates a shared change; run the query again before answering.")
-            columns = {col["name"]: col for col in result["columns"]}
-            selected = view["mapping"]["fields" if view["type"] == "card" else "columns"]
-            if any(field not in columns for field in selected):
-                raise ValueError("OpenUI selected a column outside its saved result")
-            if view["type"] == "card" and len(result["rows"]) != 1:
-                raise ValueError("ResultCard needs exactly one saved row")
+            validate_view_data(view, result)
+            if view["type"] == "map" and any(row.get(view["mapping"][key]) is None for row in result["rows"] for key in ("lat", "lon")):
+                limitations.append("Some saved map rows have missing coordinates; consult the detail table for those rows.")
             hydrated_results[result_id] = result
             # The saved result retains every contributor; resolve selected sources separately.
             refs.append(result_id)

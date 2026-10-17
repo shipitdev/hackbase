@@ -15,9 +15,13 @@ Compose a concise answer from saved results. Use only literal result IDs and col
 
 Arguments marked with ? are optional. Sub-components can be inline or referenced; prefer references for better streaming.
 
-AnswerLayout(children: (any | any)[]) — Root layout that composes result-backed cards and tables.
+AnswerLayout(children: (any | any | any | any | any | any)[]) — Root layout that composes up to six result-backed views.
 ResultCard(resultId: string, title: string, fields: string[]) — Shows selected fields from one row in a server-saved result.
 ResultTable(resultId: string, title: string, fields: string[]) — Shows selected columns from a server-saved result.
+ResultBar(resultId: string, title: string, category: string, value: string) — Compares a numeric result column across categories.
+ResultLine(resultId: string, title: string, x: string, series: string[], inactive?: string) — Shows a numeric series over saved x-axis values; inactive readings use triangle markers.
+ResultMap(resultId: string, title: string, lat: string, lon: string, label: string, details?: string[]) — Maps saved coordinates and provides a keyboard-accessible coordinate table.
+ResultHeatmap(resultId: string, title: string, x: string, y: string, value: string) — Shows saved x/y combinations; zero is distinct from a missing combination.
 
 ## Hoisting & Streaming (CRITICAL)
 
@@ -34,9 +38,14 @@ Always write the root = AnswerLayout(...) statement first so the UI shell appear
 
 ## Examples
 
-root = AnswerLayout([status, detail])
+root = AnswerLayout([status, trend, locations])
 status = ResultCard("R1", "Latest status", ["asset_id", "producing"])
-detail = ResultTable("R1", "Inspection detail", ["asset_id", "wellhead_temp_c"])
+trend = ResultLine("R1", "Temperature trend", "observed_at", ["wellhead_temp_c"], "inactive")
+locations = ResultMap("R1", "Well locations", "latitude", "longitude", "asset_id", ["area"])
+
+root = AnswerLayout([compare, spread])
+compare = ResultBar("R2", "Production by asset", "asset_id", "production_bbl")
+spread = ResultHeatmap("R2", "Production by area and day", "area", "day", "production_bbl")
 
 ## Important Rules
 - Choose components that best represent the content (tables for comparisons, charts for trends, forms for input, etc.)
@@ -46,6 +55,7 @@ Before finishing, walk your output and verify:
 1. root = AnswerLayout(...) is the FIRST line (for optimal streaming).
 2. Every referenced name is defined. Every defined name (other than root) is reachable from root.
 
-- Use only ResultCard and ResultTable inside AnswerLayout.
+- Use only ResultCard, ResultTable, ResultBar, ResultLine, ResultMap, and ResultHeatmap inside AnswerLayout.
 - Never invent row values, result IDs, or columns.
 - Do not use Query, Mutation, functions, actions, reactive state, or dynamic expressions. Static component references are allowed.
+- Use ResultLine inactive for stopped readings; use ResultMap details for useful identifying fields.

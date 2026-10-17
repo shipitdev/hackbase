@@ -10,12 +10,28 @@
     },
     "ResultTable": {
       "$ref": "#/$defs/ResultTable"
+    },
+    "ResultBar": {
+      "$ref": "#/$defs/ResultBar"
+    },
+    "ResultLine": {
+      "$ref": "#/$defs/ResultLine"
+    },
+    "ResultMap": {
+      "$ref": "#/$defs/ResultMap"
+    },
+    "ResultHeatmap": {
+      "$ref": "#/$defs/ResultHeatmap"
     }
   },
   "required": [
     "AnswerLayout",
     "ResultCard",
-    "ResultTable"
+    "ResultTable",
+    "ResultBar",
+    "ResultLine",
+    "ResultMap",
+    "ResultHeatmap"
   ],
   "additionalProperties": false,
   "$defs": {
@@ -33,6 +49,18 @@
               },
               {
                 "$ref": "#/$defs/ResultTable"
+              },
+              {
+                "$ref": "#/$defs/ResultBar"
+              },
+              {
+                "$ref": "#/$defs/ResultLine"
+              },
+              {
+                "$ref": "#/$defs/ResultMap"
+              },
+              {
+                "$ref": "#/$defs/ResultHeatmap"
               }
             ]
           }
@@ -42,7 +70,7 @@
         "children"
       ],
       "additionalProperties": false,
-      "description": "Root layout that composes result-backed cards and tables."
+      "description": "Root layout that composes up to six result-backed views."
     },
     "ResultCard": {
       "type": "object",
@@ -107,6 +135,170 @@
       ],
       "additionalProperties": false,
       "description": "Shows selected columns from a server-saved result."
+    },
+    "ResultBar": {
+      "type": "object",
+      "properties": {
+        "resultId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        }
+      },
+      "required": [
+        "resultId",
+        "title",
+        "category",
+        "value"
+      ],
+      "additionalProperties": false,
+      "description": "Compares a numeric result column across categories."
+    },
+    "ResultLine": {
+      "type": "object",
+      "properties": {
+        "resultId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "x": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "series": {
+          "minItems": 1,
+          "maxItems": 8,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        },
+        "inactive": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        }
+      },
+      "required": [
+        "resultId",
+        "title",
+        "x",
+        "series"
+      ],
+      "additionalProperties": false,
+      "description": "Shows a numeric series over saved x-axis values; inactive readings use triangle markers."
+    },
+    "ResultMap": {
+      "type": "object",
+      "properties": {
+        "resultId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "lat": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "lon": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "details": {
+          "minItems": 1,
+          "maxItems": 20,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        }
+      },
+      "required": [
+        "resultId",
+        "title",
+        "lat",
+        "lon",
+        "label"
+      ],
+      "additionalProperties": false,
+      "description": "Maps saved coordinates and provides a keyboard-accessible coordinate table."
+    },
+    "ResultHeatmap": {
+      "type": "object",
+      "properties": {
+        "resultId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "x": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "y": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        }
+      },
+      "required": [
+        "resultId",
+        "title",
+        "x",
+        "y",
+        "value"
+      ],
+      "additionalProperties": false,
+      "description": "Shows saved x/y combinations; zero is distinct from a missing combination."
     }
   }
 }

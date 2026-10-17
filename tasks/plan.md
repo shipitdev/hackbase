@@ -1,6 +1,6 @@
 # Four-hour build plan
 
-**Status: backend and native OpenUI Card/Table chat prototype implemented; browser acceptance in progress.** GPT-6.1 Sol is the sole build orchestrator, with bounded GPT-6 Luna worker tasks. Use [the checklist](todo.md) for acceptance, [the system design](../docs/system-design.md) for implementation, and [orchestration rules](../docs/orchestration.md) for dispatch/review.
+**Status: backend and native OpenUI Card/Table chat prototype implemented; all six views and resize fixtures verified; released-data checks next.** GPT-6.1 Sol is the sole build orchestrator, with bounded GPT-6 Luna worker tasks. Use [the checklist](todo.md) for acceptance, [the system design](../docs/system-design.md) for implementation, and [orchestration rules](../docs/orchestration.md) for dispatch/review.
 
 ## What we are aiming to finish
 
@@ -99,3 +99,11 @@ This revision follows the user’s orchestrator-led approach. The user subsequen
 - [System design](../docs/system-design.md) and [contracts](../docs/contracts.md): how the application pieces connect.
 - [UI layout](../docs/ui-layout.md) and [Excalidraw drawings](../docs/diagrams/README.md): editable visual reference.
 - [State](state.md), [brief](brief-template.md) and [report](report-template.md): resumable dispatch and acceptance.
+
+## Final pre-release priorities (current)
+1. Fix generated-output resizing/scroll containment and verify real wide outputs at320/390/768/1024/1440px plus resize after render.
+2. Finish native line/bar/map/heatmap and Python validation, preserve Card/Table/history. Run offline fixtures for all six/combinations; no broad paid rerun.
+3. Prepare released-data preflight/staging: inspect without changing active DB, collision/coverage checks, backup/rollback commands, preserve private memory/corrections. Load only when release arrives and passes checks.
+4. Delegate targeted real question checks after integration, then released final questions. Save every outcome promptly. Do not spend remaining time model-shopping or restyling.
+5. Package license, reproducible README, write-up/results and <=5minute demo. No submission/publishing outside previously authorized repository sync.
+Current assignments and exact paths are recorded in state; old checklist remains the full completion bar. Estimated implementation window20–30minutes, then released-data work takes priority; these are planning estimates, not promises.
