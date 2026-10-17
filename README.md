@@ -45,6 +45,6 @@ This is a **local demo user picker**, not authenticated access control for publi
 python3 -m pytest -q
 ```
 
-Tests use temporary databases. Runtime databases and credentials are ignored; source data/research is preserved. Calculations use 16 October 2026, separate from conversation timestamps. New records can be loaded with the same loader; conflicting existing IDs fail without discarding active data or runtime feedback.
+Tests use temporary databases. Runtime databases and credentials are ignored; source data/research is preserved. Calculations use 17 October 2026, separate from conversation timestamps. New records can be loaded with the same loader; conflicting existing IDs fail without discarding active data or runtime feedback.
 
 Read [system design](docs/system-design.md), [contracts](docs/contracts.md), [state](tasks/state.md) and [backend interfaces](tasks/briefs/backend-interfaces.md) for development. Worker ownership/reports remain in `tasks/`; the overall checklist still includes future frontend and submission work.

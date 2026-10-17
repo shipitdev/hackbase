@@ -17,7 +17,8 @@ SAMPLE = Path(__file__).parents[1] / "dataset" / "sample-data"
 def make_store(tmp_path):
     db = tmp_path / "knowledge.sqlite"
     load_dataset(SAMPLE, db)
-    return db, KnowledgeStore(db)
+    # Historical source benchmarks use the synthetic dataset's original analysis date.
+    return db, KnowledgeStore(db, analysis_date="2026-10-16")
 
 
 def test_corrected_views_and_source_evidence(tmp_path):

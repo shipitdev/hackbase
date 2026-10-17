@@ -45,7 +45,7 @@ A result is private even when its contributing source records are shared: reveal
 ## One question, end to end
 
 1. Browser sends selected user, owned thread, message and a unique request ID.
-2. API validates them and stores the user turn. It pins calculations to 16 October 2026; conversation timestamps remain separate.
+2. API validates them and stores the user turn. It pins calculations to 17 October 2026; conversation timestamps remain separate.
 3. The copilot receives tool instructions, the small rulebook, relevant permitted history and shared context. Large records remain outside the prompt.
 4. It calls `run_sql`, `get_evidence`, `search_documents`, `memory_read` or `remember`. The server validates every call and supplies the user identity itself.
 5. Read tools return result references, previews, evidence and completeness information. Accepted writes commit before dependent reads; retries cannot repeat a write.

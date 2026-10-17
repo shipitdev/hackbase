@@ -50,7 +50,7 @@ On 24 July, 51.6°C wellhead temperature was only 8.5°C above air. Explain the 
 
 ## Q6 — Three wells with most downtime
 
-Bar chart for Northeast Block 7, 16 June–16 October:
+Historical source-review benchmark (16 October 2026; recalculate for current date 17 October): Northeast Block 7, 16 June–16 October:
 
 - WELL-0121: **49 days**.
 - WELL-0138 and WELL-0107: **42 days each**.

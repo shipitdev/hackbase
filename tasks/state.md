@@ -21,7 +21,7 @@ The current GPT-6.1 Sol session is the sole orchestrator. Delegate bounded imple
 - Usually two workers concurrently; Sol owns contracts/integration/review and may use a third worker for an independent check.
 - React/Vite + FastAPI + SQLite; shared knowledge separate from private conversation/results.
 - Five runtime tools, corrected calculations, component-list GenUI, source inspection.
-- Calculation date 2026-10-16; separate conversation/plan dates.
+- User explicitly corrected the active calculation date to 2026-10-17. Original 16 October source-answer benchmarks are historical fixtures, not current-window guarantees; conversation/plan dates remain separate.
 - Existing original research and dataset remain unchanged.
 - Backend contract v1 is implemented; concrete classes/methods are in tasks/briefs/backend-interfaces.md.
 - Runtime adapter: configurable Chat Completions. User switched preference to DigitalOcean serverless inference. Ignored .env created for GRADIENT_MODEL_ACCESS_KEY; configured model is Claude Haiku 5.5. Live tool check pending key. Other compatible endpoints remain supported.
@@ -51,10 +51,11 @@ Backend implementation and checks: [integration report](reports/backend-integrat
 - User authorized GitHub sync to shipitdev/hackbase. Baseline published via GitHub connector: c7c93e21bf5da10598fa5c69dc9d0725a17728c4. Local .git creation remains blocked. Dataset/research checkouts, runtime DBs and keys are excluded.
 - DigitalOcean integration accepted: B3 Luna high updated the existing HTTPX provider and a two-call smoke script. Sol fixed direct-script imports and tested the script with mocks. 32 relevant provider/smoke/API/agent/real-data integration checks pass. No repeated worker polling.
 - Default .env/.env.example now select anthropic-claude-5.5-haiku on inference.do-ai.run/v1. Official catalog confirms tools; pricing sources are in docs/digitalocean.md. User has $25 credits. This is not an app-enforced account spending cap; no auto fallback or HTTP retries.
-- Ignored .env is created mode 0600. Key field remains empty at final check; live smoke exited before network with a clear missing-key error. No inference credits spent by this integration.
+- User added the model access key and set ANALYSIS_DATE=2026-10-17. Key presence verified without printing it. Live smoke attempted once, failed before HTTP because DNS cannot resolve inference.do-ai.run (gaierror errno8). Authentication and inference remain unverified; no billable completion received.
+- Runtime health confirms data ready=true, chat_ready=true (configuration only), analysis_date=2026-10-17. Sol updated code defaults; Luna medium updated date guidance/windows. Historical sample tests explicitly retain16; real-data HTTP integration checks17. Date/API/smoke/store checks:14 passed.
 - This workspace rejects local socket binding. Uvicorn reached app startup; HTTP behavior is verified using TestClient. Run the README server command from a normal local shell.
 - Frontend/browser rendering, test-set release, complete model question evaluation and submission remain unimplemented/unverified.
 
 ## Next action
 
-Next action: user pastes model access key into .env, then run python3 scripts/check_provider.py and one actual SQL/copilot question. After live provider acceptance, build the frontend against docs/contracts.md. Keep six visual types, source inspection, user/thread switching and clear provider/partial-result errors. Follow exact file ownership and completion notifications. Do not rerun completed backend checks without a related change or unresolved risk.
+Next action: run python3 scripts/check_provider.py in a normal local shell with network access (workspace DNS is blocked), then one actual SQL/copilot question. Key is already configured. After live provider acceptance, build the frontend against docs/contracts.md. Keep six visual types, source inspection, user/thread switching and clear provider/partial-result errors. Follow exact file ownership and completion notifications. Do not rerun completed backend checks without a related change or unresolved risk.

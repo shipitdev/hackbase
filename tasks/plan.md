@@ -6,7 +6,7 @@
 
 A local chat app that calculates answers from the records, shows its sources, chooses and combines useful visuals, remembers shared facts and private discussions correctly, and loads the test data safely.
 
-Keep calculations pinned to **16 October 2026**. Keep every required visual and memory behavior in scope. Report failures honestly rather than claiming unsupported answers.
+Keep calculations pinned to **17 October 2026**. Keep every required visual and memory behavior in scope. Report failures honestly rather than claiming unsupported answers.
 
 ## Where the time goes
 

@@ -24,14 +24,15 @@ def test_real_sample_http_query_sources_and_private_recall(tmp_path):
     source=Path(__file__).resolve().parents[1]/'dataset/sample-data'
     shared=tmp_path/'knowledge.sqlite'
     load_dataset(source,shared)
-    knowledge=KnowledgeStore(shared)
-    with TestClient(create_app(knowledge=knowledge,memory_path=tmp_path/'memory.sqlite',provider=SampleModel())) as client:
+    knowledge=KnowledgeStore(shared,analysis_date="2026-10-17")
+    with TestClient(create_app(knowledge=knowledge,memory_path=tmp_path/'memory.sqlite',provider=SampleModel(),analysis_date="2026-10-17")) as client:
         users=client.get('/api/users').json()['users']
         owner,other=users[0]['user_id'],users[1]['user_id']
         thread=client.post('/api/threads',json={'user_id':owner}).json()['thread_id']
         response=client.post('/api/chat',json={'user_id':owner,'thread_id':thread,'request_id':'real-data','text':'Show the latest production state for WELL-0001.'})
         assert response.status_code==200,response.text
         answer=response.json()
+        assert answer['analysis_date']=='2026-10-17'
         assert answer['status']=='complete',answer
         expected=knowledge.query_shared("SELECT producing FROM latest_inspections WHERE asset_id='WELL-0001'")['rows'][0]['producing']
         assert answer['components'][0]['data']['rows'][0]['producing']==expected

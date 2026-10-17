@@ -23,7 +23,7 @@ load_dotenv(ROOT / ".env", override=False, interpolate=False)
 
 def create_app(*, knowledge=None, knowledge_path=None, memory_path=None, provider=None, analysis_date=None):
     app = FastAPI(title="Asset Intelligence Copilot", version="0.1.0")
-    analysis = analysis_date or os.getenv("ANALYSIS_DATE", "2026-10-16")
+    analysis = analysis_date or os.getenv("ANALYSIS_DATE", "2026-10-17")
     date.fromisoformat(analysis)
     data_dir = Path(os.getenv("DATA_DIR", str(ROOT / "data")))
     shared_path = Path(knowledge_path or data_dir / "knowledge.sqlite")

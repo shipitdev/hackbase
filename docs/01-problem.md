@@ -30,20 +30,20 @@ The full rules are in [02-dataset.md](02-dataset.md). These are fictional challe
 
 ## Dates
 
-Use **16 October 2026** as the date for calculations. Do not use the laptop’s current date. Source timestamps are UTC.
+Use **17 October 2026** as the date for calculations. Do not use the laptop’s current date. Source timestamps are UTC.
 
 | Question wording | Dates to use in the sample |
 |---|---|
-| Last four months | 16 June–16 October 2026 |
-| Last twelve months | 16 October 2025–16 October 2026 |
-| Last four years | 16 October 2022–16 October 2026 |
-| Last 90 days | 18 July–16 October 2026 |
+| Last four months | 17 June–17 October 2026 |
+| Last twelve months | 17 October 2025–17 October 2026 |
+| Last four years | 17 October 2022–17 October 2026 |
+| Last 90 days | 19 July–17 October 2026 |
 | Last thirteen weeks | Start 91 days before today; sample readings run 23 July–15 October |
-| This year | 1 January–16 October 2026 |
+| This year | 1 January–17 October 2026 |
 
 Include the stated start and end dates. In code, use the start date and stop before midnight after the end date. Subtract calendar months/years, not approximate day counts. Count a repair and its cost by its **start date**, including ongoing jobs.
 
-Conversation time is separate. Q11 tests “yesterday” across two conversation days while calculations stay pinned to 16 October. A note’s planned dates are also separate: a shutdown starting tomorrow does not make a well down today.
+Conversation time is separate. Q11 tests “yesterday” across two conversation days while calculations stay pinned to 17 October. A note’s planned dates are also separate: a shutdown starting tomorrow does not make a well down today.
 
 ## The four-hour deadline
 

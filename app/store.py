@@ -98,7 +98,7 @@ class SharedRows(dict):
 
 
 class KnowledgeStore:
-    def __init__(self, path, analysis_date="2026-10-16"):
+    def __init__(self, path, analysis_date="2026-10-17"):
         self.path = str(path)
         self.analysis_date = analysis_date
         con = sqlite3.connect(self.path)

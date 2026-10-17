@@ -2,7 +2,7 @@
 
 Use plain JSON-compatible dictionaries and app.errors.AppError(code, message, status_code=400). All methods sync; each DB operation owns/closes its connection. Paths passed explicitly to stores. No worker edits app/errors.py, API/contracts/provider/agent, requirements, pytest.ini or another worker’s files.
 
-## Shared data: app.store.KnowledgeStore(path, analysis_date="2026-10-16")
+## Shared data: app.store.KnowledgeStore(path, analysis_date="2026-10-17")
 
 - info() -> {dataset_version:str, knowledge_revision:int, analysis_date:str, counts:dict}.
 - users() -> list[dict] including user_id,name,role,team_id.

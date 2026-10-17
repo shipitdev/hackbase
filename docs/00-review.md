@@ -29,7 +29,7 @@ The earlier research correctly identified temperature differences, inspection-ba
 
 ## Places where the source needs care
 
-**Today:** the checked repository and evaluation questions say **16 October 2026**. The earlier research mentioned a Google Doc saying 17 October; that document was not supplied or verified. Use the repository date unless organizers update it.
+**Current calculation date:** use **17 October 2026**, as corrected by the user. The source review and expected answers below were checked against the repository’s earlier 16 October 2026 benchmark; date-sensitive results must be recalculated for 17 October. The earlier research mentioned a Google Doc saying 17 October, but that document was not supplied or verified.
 
 **Q9 shut-in recording:** the manual requires recording before work starts. The note says work began on 7 October and is unrecorded, but the expected answer calls recording a pending action. Preserve that expected categorization and mention the missing record. Do not invent a grace period.
 

@@ -39,3 +39,7 @@ Official references:
 - [Pricing](https://docs.digitalocean.com/products/inference/details/pricing/): per-model token pricing and prepaid-credit rules. Checked 17 October 2026; confirm current prices before changing models.
 
 Local Git metadata cannot currently be created in this workspace. GitHub sync uses the GitHub connector and explicitly selected source/docs files; `.env`, databases, dataset and research checkouts are excluded.
+
+## Current validation
+
+The user configured the key and changed the calculation date to **17 October 2026**. Backend health confirms the date and credential configuration. A live smoke attempt failed before HTTP because this workspace cannot resolve the inference hostname; this does not validate or invalidate the key. Run `python3 scripts/check_provider.py` from a normal local terminal. No successful billable inference has been observed.

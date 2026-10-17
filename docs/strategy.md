@@ -116,7 +116,7 @@ Load new records in one transaction: either the load succeeds, or the existing v
 
 Check required fields and links. Keep unknown extra fields, report unreadable document formats, and never silently omit bad rows from totals. Follow report paths safely within the asset folder.
 
-Keep shared runtime corrections and private history when reloading. Print counts, errors and report-reading coverage. Keep the calculation date configurable, defaulting to 16 October 2026.
+Keep shared runtime corrections and private history when reloading. Print counts, errors and report-reading coverage. Keep the calculation date configurable, defaulting to 17 October 2026.
 
 ## D13. Use one working model and one fallback
 

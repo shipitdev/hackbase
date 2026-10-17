@@ -37,7 +37,7 @@ Example shape, using placeholder references only:
   "request_id": "request-1",
   "thread_id": "thread-1",
   "message_id": "message-2",
-  "analysis_date": "2026-10-16",
+  "analysis_date": "2026-10-17",
   "status": "complete",
   "answer": "Explanation grounded in result R1.",
   "components": [
