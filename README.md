@@ -51,6 +51,10 @@ An existing sample database must be backed up before replacement: the final rele
 
 ## How an answer travels
 
+![System design](docs/diagrams/system-design.svg)
+
+The runtime splits into three layers: a **loader** that validates and merges source records into a shared SQLite database, a **copilot loop** that calls five read-only tools against that database via a DigitalOcean-hosted model, and a **browser** that renders server-validated OpenUI components backed by saved query results. Shared knowledge (corrections, well facts, rules) lives in one database; private chats, tool traces and result rows live in a second database the analytics connection cannot open.
+
 1. The loader validates source records and stores originals, rules and searchable documents in `data/knowledge.sqlite`.
 2. The API checks the selected user and conversation. The model can call five tools: `run_sql`, `get_evidence`, `search_documents`, `memory_read` and `remember`.
 3. Restricted read-only SQL calculates from approved views. Shared corrections retain provenance; original measurements remain available. Source rules and operator notes determine the applicable interpretation.

@@ -4,7 +4,7 @@ Read the quoted paragraphs. The bracketed lines are recording directions. **Late
 
 ## 0:00–1:20 — Design
 
-[Show `docs/diagrams/video-system.svg`. Follow the arrows as you speak.]
+[Show `docs/diagrams/system-design.svg`. Follow the arrows as you speak.]
 
 “Oil-field information is spread across readings, repair reports, rules and operator notes. I built a chat interface that brings those sources together and lets someone inspect where an answer came from.
 

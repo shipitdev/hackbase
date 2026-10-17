@@ -4,6 +4,18 @@
 
 Operators ask questions across inspection records, maintenance reports, operating rules and earlier discussions. The copilot uses read-only SQLite queries for calculations and cites the records behind an answer. Production is calculated from temperature above ambient, with type-specific thresholds; downtime follows the challenge's inspection convention. Final dataset: 600 wells across seven areas, as of 15 January 2027.
 
+## System design
+
+![System design](../docs/diagrams/system-design.svg)
+
+The system has three layers:
+
+1. **Loader** — validates source records, preserves originals, applies accepted corrections as separate rows, and indexes manuals/SOPs for full-text search. Output: `knowledge.sqlite` (shared) and `memory.sqlite` (private).
+2. **Copilot loop** — a FastAPI backend binds user identity server-side and exposes five tools to the model: `run_sql` (read-only against approved views), `get_evidence`, `search_documents`, `memory_read`, `remember`. The model never writes to source data; corrections go through `remember` which validates scope, deduplicates retries, and writes to the corrections table. Query results are saved and referenced by ID — the model never types numbers into a chart.
+3. **Browser** — a React chat UI renders native OpenUI components (status card, table, line, bar, map, heatmap). The model proposes a display; server validation checks allowed components, result ownership, revision, columns and values against the saved result before the browser renders it. Numbers come from saved rows, never model-authored arrays.
+
+Shared knowledge and private conversations are in separate SQLite files. The analytics connection cannot open the private database. Every answer carries citations to record IDs, rule § clauses or saved result IDs, so a reviewer can verify any figure in one click.
+
 A React chat interface renders native OpenUI programs chosen by the runtime model. Numbers come from saved query results, never model-authored arrays. A Node process runs the official parser and rejects executable actions or dynamic programs. The server checks user/thread ownership, source revision and column types before publishing a visual.
 
 ## Memory and corrections
