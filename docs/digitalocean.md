@@ -17,19 +17,19 @@ Run `python3 scripts/check_provider.py` from the project after adding the key. I
 
 Then exercise one real production-status question through `/api/chat`, checking its SQL/result, cited inspection/manual, and returned component data. Only after that passes should we run the broader question set. Record failures rather than silently changing providers or benchmarking every model.
 
-## Budget: $25 available
+## Budget: $4 currently available
 
 Use the existing single provider, eight-round maximum, 120-second answer limit, 96,000-character context limit and 4,096-token output limit per regular model call. The small smoke uses a much smaller output allowance. No background model jobs, automatic paid fallback, or automatic HTTP retries are configured.
 
-These request limits are **not a $25 account-wide spending cap**. DigitalOcean charges reported inference usage against eligible promotional credits/prepaid balances; verify that your credits appear in the inference balance and keep auto-reload disabled if you want spending limited to available credit. Other projects using the same account can also spend it. Check provider usage/balance before running a large evaluation.
+These request limits are **not a $4 account-wide spending cap**. DigitalOcean charges reported inference usage against eligible promotional credits/prepaid balances; verify that your credits appear in the inference balance and keep auto-reload disabled if you want spending limited to available credit. Other projects using the same account can also spend it. Check provider usage/balance before running a large evaluation.
 
 ## Model choice and sources
 
-Selected model: `anthropic-claude-5.5-haiku` (Claude Haiku 5.5). DigitalOcean explicitly lists tool calling. Published rates for prompts up to 100K tokens are $0.10 per million input tokens and $0.50 per million output tokens; prompts over 100K are priced differently. This is an economical candidate, not a claim of proven SQL accuracy.
+Selected route: `inference-router`, with `LLM_ROUTING_PREFERENCE=budget`. DigitalOcean chooses the serving model for each request. No custom router, control-plane token, droplet or dedicated deployment is required. Routing is free during public preview, but inference is charged at the selected model's rates. Budget preference leans toward lower cost; it is not a fixed price ceiling or an account-wide spending cap.
 
-For scale, 10,000 input tokens plus 2,000 output tokens cost about $0.002 at those rates, before any cache adjustments. An app answer may make several model calls. The tiny two-call smoke has at most 512 generated tokens total; it is for connectivity/function use, not a performance benchmark.
+The provider records the returned model ID, the smoke prints served models, and copilot answers retain `served_models` in model-call order. The model access key must include **Inference routers** access (all routers or the selected router). Existing key scopes cannot be edited after creation. Account/model/router key scopes and tier restrictions still apply; the documentation does not guarantee the router bypasses them. Test the tiny tool roundtrip before running real queries.
 
-Qwen and DeepSeek remain potential alternatives, but the catalog did not explicitly confirm function calling for the checked entries. Do not infer that they lack the capability; test before switching.
+The earlier Haiku choice was rejected by the account tier; the user confirmed that denial and requested managed routing. Current key belongs to an account with $4 inference credit. Original $25 planning assumptions no longer describe the current balance.
 
 Official references:
 
@@ -63,3 +63,14 @@ LLM_MODEL=openai-gpt-oss-120b python3 scripts/check_provider.py
 ```
 
 The command makes at most two small inference requests; it is not an automatic fallback. DigitalOcean's ID is `openai-gpt-oss-120b`; published input/output pricing is $0.10/$0.70 per million tokens. The original model supports function calling ([OpenAI model docs](https://developers.openai.com/api/docs/models/gpt-oss-120b)); DigitalOcean's hosted behavior still needs this test. Keep the existing `.env` model until a tool roundtrip is confirmed. A token-limit/truncation error would be a separate issue from403 and should be diagnosed separately. Do not pay for an account upgrade just to test this hypothesis.
+
+## Managed router configuration
+
+Use the unchanged serverless base URL and model access key, with:
+
+```dotenv
+LLM_MODEL=inference-router
+LLM_ROUTING_PREFERENCE=budget
+```
+
+The provider sends `routing_preference` only for DigitalOcean's managed router; direct models and other endpoints retain their existing payload. Allowed preferences are budget, balanced and quality. The normal smoke remains at most two short paid calls. [Official managed router guide](https://docs.digitalocean.com/products/inference/how-to/use-inference-router/) documents the alias, preferences, billing and returned model ID.

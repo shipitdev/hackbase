@@ -12,6 +12,7 @@ from app.provider import CompatibleProvider, _digitalocean_403_hint
 
 
 def diagnose(provider):
+    """Check catalog visibility only; this endpoint does not verify model entitlement."""
     if not provider.digitalocean:
         raise AppError("invalid_request", "--diagnose requires the DigitalOcean inference endpoint.")
     try:
@@ -41,7 +42,7 @@ def diagnose(provider):
     elif response.status_code == 403:
         result["status"] = "forbidden"
         result["guidance"] = _digitalocean_403_hint(response).strip()
-        result["checks"] = ["key status", "model scope", "VPC restriction", "inference balance"]
+        result["checks"] = ["account tier", "key status", "model scope", "VPC restriction", "inference balance"]
     elif response.status_code == 401:
         result["status"] = "authentication_rejected"
     elif response.status_code == 402:
@@ -94,7 +95,8 @@ def run(*, diagnose_only=False):
     usage_values = [result.get("usage", {}).get("total_tokens") for result in (first_result, final_result)]
     usage = sum(value for value in usage_values if type(value) is int) if any(type(value) is int for value in usage_values) else None
     # Usage fields are safe metadata; model text, headers, and response bodies stay private.
-    return {"model": provider.model, "tool_calls": len(calls), "roundtrip": "ok", "usage": usage}
+    served_models = [result.get("model", provider.model) for result in (first_result, final_result)]
+    return {"model": provider.model, "served_models": served_models, "tool_calls": len(calls), "roundtrip": "ok", "usage": usage}
 
 
 if __name__ == "__main__":

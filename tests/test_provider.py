@@ -57,6 +57,47 @@ def test_digitalocean_uses_gradient_key_and_completion_token_parameter(monkeypat
     assert b'"tools"' in seen[0].content
 
 
+@pytest.mark.parametrize("preference", ["balanced", "budget", "quality"])
+def test_digitalocean_router_sends_validated_preference_and_reports_served_model(monkeypatch, preference):
+    monkeypatch.delenv("LLM_API_KEY", raising=False)
+    monkeypatch.setenv("GRADIENT_MODEL_ACCESS_KEY", "do-key")
+    monkeypatch.setenv("LLM_ROUTING_PREFERENCE", preference)
+    seen = []
+    provider = CompatibleProvider("inference-router", "https://inference.do-ai.run/v1", transport=httpx.MockTransport(
+        lambda request: (seen.append(request) or httpx.Response(200, json={"model": "openai-gpt-oss-120b", "choices": [{"message": {"content": "ok"}}]}))
+    ))
+    result = provider.complete([{"role": "user", "content": "hi"}], [{"type": "function"}], max_tokens=256)
+    assert result["model"] == "openai-gpt-oss-120b"
+    assert b'"model":"inference-router"' in seen[0].content
+    assert f'"routing_preference":"{preference}"'.encode() in seen[0].content
+    assert b'"max_completion_tokens":256' in seen[0].content
+    assert b'"tools"' in seen[0].content
+
+
+def test_digitalocean_router_defaults_to_budget_and_rejects_invalid_preference(monkeypatch):
+    monkeypatch.delenv("LLM_ROUTING_PREFERENCE", raising=False)
+    seen = []
+    provider = CompatibleProvider("inference-router", "https://inference.do-ai.run/v1", "key", transport=httpx.MockTransport(
+        lambda request: (seen.append(request) or httpx.Response(200, json={"choices": [{"message": {"content": "ok"}}]}))
+    ))
+    provider.complete([], [])
+    assert provider.routing_preference == "budget"
+    assert b'"routing_preference":"budget"' in seen[0].content
+    monkeypatch.setenv("LLM_ROUTING_PREFERENCE", "cheapest")
+    with pytest.raises(AppError, match="LLM_ROUTING_PREFERENCE"):
+        CompatibleProvider("inference-router", "https://inference.do-ai.run/v1", "key")
+
+
+def test_router_preference_is_ignored_by_other_provider(monkeypatch):
+    monkeypatch.setenv("LLM_ROUTING_PREFERENCE", "quality")
+    seen = []
+    provider = CompatibleProvider("inference-router", "https://example.test/v1", "key", transport=httpx.MockTransport(
+        lambda request: (seen.append(request) or httpx.Response(200, json={"choices": [{"message": {"content": "ok"}}]}))
+    ))
+    provider.complete([], [])
+    assert b'"routing_preference"' not in seen[0].content
+
+
 def test_digitalocean_llm_api_key_takes_priority(monkeypatch):
     monkeypatch.setenv("LLM_API_KEY", "preferred")
     monkeypatch.setenv("GRADIENT_MODEL_ACCESS_KEY", "gradient")
@@ -85,6 +126,7 @@ def test_digitalocean_errors_are_safe(status, monkeypatch):
 
 @pytest.mark.parametrize(("body", "hint"), [
     ('{"error":{"message":"key not authorized for model: private-id"}}', "model list in DigitalOcean Model Access Keys"),
+    ('{"error":{"message":"key not authorized for router: private-id"}}', "check Inference routers access"),
     ('{"error":{"message":"Model is not available on the current account tier: private-id"}}', "account tier"),
     ('{"error":{"message":"VPC network restriction: private-network"}}', "different VPC"),
     ('{"error":{"message":"invalid api key: private-secret"}}', "access key"),

@@ -17,6 +17,8 @@ def _digitalocean_403_hint(response):
         return " DigitalOcean rejected the access key; verify that it is active and is a model access key or personal access token."
     if "tier" in body and any(term in body for term in ("not available", "not permitted", "not have access", "does not support", "restricted")):
         return " DigitalOcean reports that this model is unavailable for the account tier; check the team's Inference limits before changing keys or models."
+    if any(term in body for term in ("router scope", "not authorized for router", "no access to router", "router is not allowed")):
+        return " The key may not allow this inference router; check Inference routers access in DigitalOcean Model Access Keys."
     if any(term in body for term in ("model scope", "not authorized for model", "not permitted to use model", "no access to model", "model is not allowed")):
         return " The key may not be scoped to this model; check its model list in DigitalOcean Model Access Keys."
     if "vpc" in body and any(term in body for term in ("restrict", "network", "source")):
@@ -41,6 +43,11 @@ class CompatibleProvider:
         )
         self.local = url.hostname in {"localhost", "127.0.0.1", "::1"}
         self.digitalocean = do_endpoint
+        self.routing_preference = None
+        if self.digitalocean and self.model == "inference-router":
+            self.routing_preference = os.getenv("LLM_ROUTING_PREFERENCE", "budget") or "budget"
+            if self.routing_preference not in {"balanced", "budget", "quality"}:
+                raise AppError("invalid_request", "LLM_ROUTING_PREFERENCE must be balanced, budget, or quality.")
 
     @property
     def configured(self):
@@ -54,6 +61,8 @@ class CompatibleProvider:
             with httpx.Client(transport=self.transport, timeout=httpx.Timeout(timeout, connect=min(timeout, 10))) as client:
                 payload = {"model": self.model, "messages": messages, "tools": tools, "stream": False}
                 payload["max_completion_tokens" if self.digitalocean else "max_tokens"] = max_tokens
+                if self.routing_preference:
+                    payload["routing_preference"] = self.routing_preference
                 response = client.post(f"{self.base_url}/chat/completions", headers=headers, json=payload)
                 response.raise_for_status()
                 data = response.json()
@@ -68,7 +77,8 @@ class CompatibleProvider:
                 for call in message["tool_calls"]:
                     if not isinstance(call, dict) or not isinstance(call.get("id"), str) or call.get("type") != "function" or not isinstance(call.get("function"), dict) or not isinstance(call["function"].get("name"), str) or not isinstance(call["function"].get("arguments"), str):
                         raise ValueError("Malformed provider tool call")
-            return {"message": message, "usage": data.get("usage", {})}
+            served_model = data.get("model")
+            return {"message": message, "usage": data.get("usage", {}), "model": served_model if isinstance(served_model, str) and served_model else self.model}
         except httpx.TimeoutException as exc:
             raise AppError("timeout", "Model provider timed out; the request can be retried.", 504) from exc
         except httpx.HTTPStatusError as exc:

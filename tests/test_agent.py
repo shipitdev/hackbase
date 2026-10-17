@@ -142,3 +142,14 @@ def test_large_table_keeps_contributors_in_saved_result_without_citation_overflo
     answer=copilot.answer({'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'},'Show a table')
     assert answer['status']=='complete'
     assert len(memory.results['R1']['evidence_refs'])==200
+
+
+def test_router_served_models_are_saved_for_each_model_round():
+    class Router(Scripted):
+        model='inference-router'
+        def complete(self,*a,**kw):
+            return {**super().complete(*a,**kw),'model':'selected-model'}
+    model=Router([tool('run_sql',{'sql':'SELECT * FROM effective_inspections'}),final()])
+    answer=Copilot(Knowledge(),Memory(),model).answer({'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-17'},'Status?')
+    assert answer['model']=='inference-router'
+    assert answer['served_models']==['selected-model','selected-model']

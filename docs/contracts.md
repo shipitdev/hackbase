@@ -29,6 +29,7 @@ Required fields: `request_id`, `thread_id`, `message_id`, `analysis_date`, `stat
 - `citations`: resolved source references used by this answer. Unknown references are rejected or explicitly reported missing.
 - `conflicts`: list of disagreeing statements, their sources/authors/times and current state; may be empty.
 - `limitations`: missing/unread evidence, truncation or failed visuals; may be empty.
+- `model` is the configured model/route; `served_models` retains actual serving model IDs in call order when routing is used.
 
 Example shape, using placeholder references only:
 

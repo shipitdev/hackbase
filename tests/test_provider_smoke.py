@@ -16,12 +16,12 @@ def test_smoke_checks_bounded_function_roundtrip_without_printing_output(monkeyp
         def complete(self,messages,tools,**kwargs):
             calls.append((list(messages),kwargs))
             if len(calls)==1:
-                return {'message':{'role':'assistant','tool_calls':[{'id':'add','type':'function','function':{'name':'add_numbers','arguments':json.dumps({'a':19,'b':23})}}]},'usage':{'total_tokens':10}}
+                return {'message':{'role':'assistant','tool_calls':[{'id':'add','type':'function','function':{'name':'add_numbers','arguments':json.dumps({'a':19,'b':23})}}]},'usage':{'total_tokens':10},'model':'served-model-1'}
             assert json.loads(messages[-1]['content'])=={'sum':42}
-            return {'message':{'content':'42'},'usage':{'total_tokens':12}}
+            return {'message':{'content':'42'},'usage':{'total_tokens':12},'model':'served-model-2'}
     monkeypatch.setattr(check_provider,'CompatibleProvider',FakeProvider)
     monkeypatch.setattr(check_provider,'load_dotenv',lambda *a,**k:None)
-    assert check_provider.run()=={'model':'mock','tool_calls':1,'roundtrip':'ok','usage':22}
+    assert check_provider.run()=={'model':'mock','served_models':['served-model-1','served-model-2'],'tool_calls':1,'roundtrip':'ok','usage':22}
     assert len(calls)==2
     assert all(options['max_tokens']==256 for _,options in calls)
 

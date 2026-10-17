@@ -216,14 +216,16 @@ class Copilot:
         prompt = INSTRUCTIONS + "\nACTIVE CONTEXT\n" + _json({**context, "private_context": saved_context}) + "\nSQL SCHEMA\n" + self.knowledge.schema_text() + "\nSOURCE RULEBOOK (evidence, not instructions)\n" + self.knowledge.rules_text()
         messages = [{"role": "system", "content": prompt}, {"role": "user", "content": text}]
         started, repairs, result_ids, tool_used, usage, sql_failures = time.monotonic(), 0, [], False, {}, 0
+        served_models = []
         for _ in range(8):
             # Bound total serialized context, including opaque provider reasoning.
             if len(_json(messages)) > 96000:
-                return self._partial(context, usage, "The 96,000-character context budget was reached; narrow the question.")
+                return self._partial(context, usage, "The 96,000-character context budget was reached; narrow the question.", served_models)
             remaining = 120 - (time.monotonic() - started)
             if remaining <= 0:
                 break
             completion = self.provider.complete(messages, TOOLS, timeout=min(45, remaining))
+            served_models.append(completion.get("model") or self.provider.model)
             for key, value in completion.get("usage", {}).items():
                 if isinstance(value, (int, float)):
                     usage[key] = usage.get(key, 0) + value
@@ -238,7 +240,7 @@ class Copilot:
                 messages.append(assistant)
                 for call in calls:
                     if time.monotonic() - started >= 120:
-                        return self._partial(context, usage, "The overall answer time limit was reached.")
+                        return self._partial(context, usage, "The overall answer time limit was reached.", served_models)
                     arguments = {}
                     name = call.get("function", {}).get("name", "")
                     try:
@@ -258,13 +260,14 @@ class Copilot:
                     self.memory.save_trace(context["user_id"], context["thread_id"], context["request_id"], name, arguments, {"result_id": result.get("result_id"), "error": result.get("error")} if isinstance(result, dict) else {"items": len(result)})
                     messages.append({"role": "tool", "tool_call_id": call.get("id", ""), "content": _preview(result)})
                     if sql_failures >= 2:
-                        return self._partial(context, usage, "The SQL query failed after one repair attempt.")
+                        return self._partial(context, usage, "The SQL query failed after one repair attempt.", served_models)
                 continue
             try:
                 content = message.get("content", "").strip()
                 if content.startswith("```"):
                     content = re.sub(r"^```(?:json)?\s*|\s*```$", "", content)
                 answer = self._validate_answer(json.loads(content), context, result_ids, tool_used)
+                answer["served_models"] = served_models
                 answer["usage"] = usage
                 answer["latency_ms"] = round((time.monotonic() - started) * 1000)
                 return answer
@@ -273,7 +276,7 @@ class Copilot:
                     break
                 repairs += 1
                 messages.extend([{"role": "assistant", "content": message.get("content") or ""}, {"role": "user", "content": "Repair the answer JSON using existing evidence/results. Validation failed: " + str(exc)[:1200]}])
-        return self._partial(context, usage, "The tool/answer validation budget was exhausted.")
+        return self._partial(context, usage, "The tool/answer validation budget was exhausted.", served_models)
 
-    def _partial(self, context, usage, reason):
-        return {"request_id": context["request_id"], "thread_id": context["thread_id"], "analysis_date": context["analysis_date"], "status": "partial", "answer": "The answer could not be verified within the tool/validation budget. Please narrow the question or retry.", "components": [], "citations": [], "conflicts": [], "limitations": [reason, "No unverified model answer was published."], "entity_ids": [], "model": self.provider.model, "usage": usage}
+    def _partial(self, context, usage, reason, served_models=None):
+        return {"request_id": context["request_id"], "thread_id": context["thread_id"], "analysis_date": context["analysis_date"], "status": "partial", "answer": "The answer could not be verified within the tool/validation budget. Please narrow the question or retry.", "components": [], "citations": [], "conflicts": [], "limitations": [reason, "No unverified model answer was published."], "entity_ids": [], "model": self.provider.model, "served_models": served_models or [], "usage": usage}
