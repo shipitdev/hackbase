@@ -1,6 +1,6 @@
 # Asset Intelligence Copilot — build notes
 
-These notes explain what to build, why, and how to fit it into four hours. Planning only: the app has not been built.
+These notes explain what to build, why, and how to fit it into four hours. The backend is implemented; live domain acceptance and native OpenUI frontend work are in progress.
 
 **For orchestration, start with [AGENTS.md](../AGENTS.md), [current state](../tasks/state.md) and [the four-hour plan](../tasks/plan.md).** For a human overview, read [the proposed design](strategy.md). Use the other files when you need a rule, an expected answer or the reason behind a decision.
 
@@ -11,6 +11,7 @@ These notes explain what to build, why, and how to fit it into four hours. Plann
 | [02-dataset.md](02-dataset.md) | What is in the data and how the rules work |
 | [03-questions.md](03-questions.md) | What each of the 18 example questions must demonstrate |
 | [04-genui-and-context.md](04-genui-and-context.md) | What the supplied GenUI and memory resources mean for our build |
+| [05-frontend-openui.md](05-frontend-openui.md) | Native OpenUI generation, six displays, validation and build slices |
 | [strategy.md](strategy.md) | The design decisions, in plain English |
 | [system-design.md](system-design.md) | Application modules and the question-to-answer flow |
 | [contracts.md](contracts.md) | Shared API, results and UI component shapes |

@@ -4,7 +4,7 @@
 
 GPT-6.1 Sol in the main session is the sole build orchestrator. It owns the plan, contracts, assignments, integration decisions and acceptance of completed work. Workers implement a bounded assignment and report back; they do not launch their own agents or redesign the system.
 
-Current stage: backend implementation authorized by the user. Build backend only in this phase; keep frontend tasks pending. Follow assigned file ownership.
+Current stage: backend real-question acceptance plus native OpenUI frontend planning and a bounded compatibility spike are authorized. Full frontend implementation follows the saved OpenUI plan; keep exact assigned file ownership.
 
 Use GPT-6 Luna **high** for data, calculations, report reading, feedback, memory and substantial debugging. Use Luna **medium** for well-specified UI components, small edits and documentation. These are initial choices to evaluate, not guarantees. Do not change the orchestrator model or automatically change the finished app’s runtime model.
 

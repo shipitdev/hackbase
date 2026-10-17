@@ -42,7 +42,7 @@ For example, the description can mean: “Show result R1 as a bar chart, then as
 
 Support the six required data displays plus ordinary text, a disagreement notice and expandable source details. Existing table sorting, map popups and source inspection provide useful interaction. Add a new clarification form only if a real question needs it; do not require an extra approval click for every clear correction.
 
-Default to the small JSON description in [D11](strategy.md#d11-generate-a-combination-of-useful-interface-pieces). If OpenUI is already familiar and a quick pre-event check proves it reduces work, it can replace the rendering layer. Otherwise, learning its language or hosting OUI-1 adds uncertainty we do not need. This is a time-budget judgment, not a claim that custom JSON outperforms OpenUI.
+**Updated user decision:** use OpenUI and let the model generate OpenUI Lang directly. The earlier JSON-first recommendation is superseded for the new frontend. Keep result-backed data, private memory and source checks; first prove the official parser and renderer work with our component library. See the [native OpenUI plan](05-frontend-openui.md).
 
 Do not introduce a second UI model, arbitrary generated code, a training pipeline or multiple UI protocols just to match a resource’s architecture. Keep database calculations, memory and evidence independent of the UI library.
 

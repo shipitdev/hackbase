@@ -115,3 +115,7 @@ Freeze these normal query names at T1: `assets`, `equipment`, `areas`, `teams`, 
 Use a separate connection opened read-only against the shared DB, with query-only mode, SQLite authorization checks, disabled extensions and an execution/output limit. Deny writes, schema changes, attachment, PRAGMA and unapproved functions. Permit underlying raw-table reads only when SQLite identifies an approved corrected view as their source; do not rely on a SELECT-prefix regex. The private DB is never attached. The dedicated evidence/search tools use checked IDs and their own fixed queries rather than granting extra SQL access.
 
 Sol freezes the small required built-in function allowlist with the store implementation (aggregates, date/string helpers and window functions actually used). Check rejected writes/attachment/extension calls and direct raw/private access, as well as a legitimate query through an approved view. Return safe diagnostics so the model can repair a mistaken column/query without weakening this boundary.
+
+## Planned native OpenUI revision
+
+The implemented v1 still uses the component list above. The user chose model-generated OpenUI Lang for the frontend. Proposed UI fields and validation are in [the OpenUI plan](05-frontend-openui.md). Freeze v2 only after the package/parser/renderer compatibility check passes; do not claim the existing endpoints already emit native OpenUI.

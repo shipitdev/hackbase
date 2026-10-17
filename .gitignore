@@ -8,3 +8,6 @@ data/
 .DS_Store
 dataset/
 opencode/
+node_modules/
+dist/
+.vite/

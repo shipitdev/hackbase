@@ -17,11 +17,11 @@ Run `python3 scripts/check_provider.py` from the project after adding the key. I
 
 Then exercise one real production-status question through `/api/chat`, checking its SQL/result, cited inspection/manual, and returned component data. Only after that passes should we run the broader question set. Record failures rather than silently changing providers or benchmarking every model.
 
-## Budget: $4 currently available
+## Budget: $25 currently available
 
 Use the existing single provider, eight-round maximum, 120-second answer limit, 96,000-character context limit and 4,096-token output limit per regular model call. The small smoke uses a much smaller output allowance. No background model jobs, automatic paid fallback, or automatic HTTP retries are configured.
 
-These request limits are **not a $4 account-wide spending cap**. DigitalOcean charges reported inference usage against eligible promotional credits/prepaid balances; verify that your credits appear in the inference balance and keep auto-reload disabled if you want spending limited to available credit. Other projects using the same account can also spend it. Check provider usage/balance before running a large evaluation.
+These request limits are **not a $25 account-wide spending cap**. DigitalOcean charges reported inference usage against eligible promotional credits/prepaid balances; verify that your credits appear in the inference balance and keep auto-reload disabled if you want spending limited to available credit. Other projects using the same account can also spend it. Check provider usage/balance before running a large evaluation.
 
 ## Model choice and sources
 
@@ -29,7 +29,7 @@ Selected route: `inference-router`, with `LLM_ROUTING_PREFERENCE=budget`. Digita
 
 The provider records the returned model ID, the smoke prints served models, and copilot answers retain `served_models` in model-call order. The model access key must include **Inference routers** access (all routers or the selected router). Existing key scopes cannot be edited after creation. Account/model/router key scopes and tier restrictions still apply; the documentation does not guarantee the router bypasses them. Test the tiny tool roundtrip before running real queries.
 
-The earlier Haiku choice was rejected by the account tier; the user confirmed that denial and requested managed routing. Current key belongs to an account with $4 inference credit. Original $25 planning assumptions no longer describe the current balance.
+The earlier Haiku choice was rejected by the account tier; the user confirmed that denial and requested managed routing. The user restored the original key/account, reports the router smoke worked, and restored a $25 budget. A full domain-question check is separate from that smoke.
 
 Official references:
 

@@ -1,0 +1,15 @@
+{
+  "name": "asset-intelligence-frontend-spike",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@openuidev/react-lang": "latest",
+    "@openuidev/react-ui": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "tsx": "latest"
+  }
+}

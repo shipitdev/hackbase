@@ -67,7 +67,7 @@ Keep proven failure, possible missing-evidence failure, pending action and unkno
 
 Use a component list with six data displays: card, table, line, bar, map and heatmap. Text explanation, disagreement notices and source details surround those displays. A bar chart and table can share the same result reference, guaranteeing the same underlying numbers.
 
-React owns the components; the model chooses the combination and columns. It does not supply executable code. Use Recharts for line/bar, Leaflet for maps, ordinary HTML for card/table and a CSS table/grid for heatmap. [Layout](ui-layout.md) describes placement, empty/loading/error states and mobile behavior.
+The implemented backend still returns validated component JSON. The user selected a native OpenUI frontend: the next contract will carry model-generated OpenUI Lang with result-backed components, reuse existing OpenUI widgets, and add map/heatmap support. Validate this integration before migrating the live path. No generated executable code is allowed. See the [OpenUI plan](05-frontend-openui.md) and [layout](ui-layout.md).
 
 ## Loading new data
 

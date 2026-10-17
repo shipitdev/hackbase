@@ -89,7 +89,7 @@ For final questions, save the prompt, user, calculation date, answer, visual, so
 
 Use an already accessible model that passes the opening check. Default application locations are `app/` and `frontend/`, with ignored runtime files in `data/`. Leave `dataset/` and `opencode/` intact.
 
-Use the small JSON-based component description by default. OpenUI is optional if already familiar and tested before the event; do not add a dedicated UI model or protocol stack. See [the resource review](../docs/04-genui-and-context.md).
+The user now selected native OpenUI Lang generation. Follow the [OpenUI frontend plan](../docs/05-frontend-openui.md): compatibility check, contract migration, shell, six displays and browser acceptance. Do not add a dedicated UI model or paid gateway.
 
 This revision follows the user’s orchestrator-led approach. The user subsequently authorized backend implementation first. This phase runs the data and private-memory lanes in parallel while Sol integrates the API/model loop. Live provider compatibility and the actual test dataset’s overlap rules remain unverified.
 

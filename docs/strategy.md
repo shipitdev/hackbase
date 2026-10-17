@@ -100,11 +100,11 @@ Keep proven breaches, possible breaches, pending work, met/closed duties and unk
 
 ## D11. Generate a combination of useful interface pieces
 
-**Revision after the resource review:** let the model return a list of components, rather than allowing only one visual per answer.
+**Revision after the resource review and user choice:** let the model compose several components in OpenUI Lang, rather than allowing only one visual per answer.
 
 For example, a well-status answer can contain a status card, a disagreement warning and expandable sources. A downtime comparison can contain a bar chart and a supporting table. The model chooses the relevant components, order, titles and data columns for each question.
 
-Build cards/tables with HTML, line/bar charts with Recharts, maps with Leaflet and heatmaps with a simple grid/table. Use a small JSON description to arrange them. OpenUI is an optional way to do this if already familiar and tested; do not make the build depend on running the OUI-1 model. [Reasoning and sources](04-genui-and-context.md).
+**User-selected revision:** generate OpenUI Lang directly and render through OpenUI. Reuse its existing card/table/chart widgets through result-backed bindings; add map/heatmap support as needed. Prove parser, data binding and rendering compatibility before changing the backend response contract. Do not require OUI-1 or another paid UI service. [Native OpenUI plan](05-frontend-openui.md).
 
 Reference stored query results instead of making the model copy chart numbers. Check allowed component names, columns and result ownership before rendering. No model-generated JavaScript or arbitrary HTML runs in the app.
 
