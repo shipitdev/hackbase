@@ -6,7 +6,7 @@ Operators ask questions across inspection records, maintenance reports, operatin
 
 ## System design
 
-![System design](../docs/diagrams/system-design.svg)
+![System design](../docs/diagrams/video-system.svg)
 
 The system has three layers:
 

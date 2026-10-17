@@ -51,7 +51,7 @@ An existing sample database must be backed up before replacement: the final rele
 
 ## How an answer travels
 
-![System design](docs/diagrams/system-design.svg)
+![System design](docs/diagrams/video-system.svg)
 
 The runtime splits into three layers: a **loader** that validates and merges source records into a shared SQLite database, a **copilot loop** that calls five read-only tools against that database via a DigitalOcean-hosted model, and a **browser** that renders server-validated OpenUI components backed by saved query results. Shared knowledge (corrections, well facts, rules) lives in one database; private chats, tool traces and result rows live in a second database the analytics connection cannot open.
 
