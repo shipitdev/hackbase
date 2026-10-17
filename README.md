@@ -2,7 +2,7 @@
 
 A local chat application for the FlytBase asset-intelligence challenge. FastAPI and SQLite combine well records, operating documents, operator notes and private conversation history. React and OpenUI render result-backed cards, tables, charts, maps and heatmaps with inspectable evidence.
 
-The final dataset contains **600 wells across seven areas**, with calculations anchored to **15 January 2027**. The latest completed full evaluation produced **two source-supported answers across 21 turns**. This is a prototype with substantial remaining reliability limits; returned HTTP responses are not accuracy passes.
+The final dataset contains **600 wells across seven areas**, with calculations anchored to **15 January 2027**. The latest completed run independently verified **two answers across 21 turns**, with two additional recall outputs provisionally matched to saved query rows. This is a prototype with substantial remaining reliability limits; returned HTTP responses are not accuracy passes.
 
 ## Start locally
 
@@ -76,9 +76,9 @@ The final questions are in the official dataset's `test-data/final-questions.md`
 
 The [E4 report](tasks/reports/E4-final-rerun.md) records the outputs, limitations and usage lower bound. [Independent source checks](tasks/reports/E4-source-oracles.md) provide reference results; they are not copilot answers. Earlier runs remain separate.
 
-A post-context-change evaluation is currently in progress. At the write-up snapshot, 16/21 turns had been attempted: 11 partial HTTP 200 responses, four HTTP 502 errors, and one pending request. These interim responses have not completed evidence review, so the counts do not establish improved accuracy. Its private captures are under ignored `data/evaluations/context-pipeline-final/`. To start a fresh run in a new workspace, use `python3 scripts/evaluate_context_pipeline.py --run`; use `--resume` only for an existing interrupted run. It makes paid inference calls and does not change the active database.
+The completed post-context-change run attempted all 21 turns once: 13 HTTP 200 partial responses and eight HTTP 502 provider errors, with no HTTP 504 or explicit context-limit error. Two outputs were independently source-checked; two recall outputs matched saved results but lack a separate oracle review. This is not a broad accuracy score. See the [per-turn Markdown write-up](submission/writeup.md) and [run summary](submission/context-pipeline-status.md). Its private captures are under ignored `data/evaluations/context-pipeline-final/`. To run it in a fresh workspace, use `python3 scripts/evaluate_context_pipeline.py --run`; use `--resume` only for an interrupted run. It makes paid inference calls and leaves the active database unchanged.
 
-After E4, the provider request was changed to retain tool definitions while using `tool_choice: none` for final synthesis. That repair has offline test evidence, not a post-fix full-suite score. A later context repair bounds tool previews, deduplicates search excerpts, supports evidence paging, and compacts older tool cycles at72,000 characters while keeping saved results and source references. It passed a realistic offline replay and 75 focused checks. A subsequent single Q4 check returned in 180.7 seconds without a context-limit failure or timeout, but both final drafts failed JSON validation; no usable table was returned. This is not an answer-quality pass. The E4 results must not be presented as a test of these later changes. Increasing timeouts does not solve context growth. No automatic provider retries or model fallbacks are enabled. The development proxy waits up to 300 seconds.
+After E4, the provider request was changed to retain tool definitions while using `tool_choice: none` for final synthesis. The later context repair bounds tool previews, deduplicates search excerpts, supports evidence paging, and compacts older tool cycles at 72,000 characters while keeping saved results and source references. It passed 75 focused offline checks. The completed context-pipeline run exercises these changes: it had no explicit context-limit response or HTTP 504, but still returned eight provider errors, seven answer-validation/citation failures and one SQL-repair failure. The earlier targeted Q4 check also failed JSON validation. See the per-turn [Markdown write-up](submission/writeup.md); E4 does not measure these later changes. Increasing timeouts does not solve context growth. No automatic provider retries or model fallbacks are enabled. The development proxy waits up to 300 seconds.
 
 ## Checks
 
@@ -92,11 +92,10 @@ Offline tests use scripted providers and temporary databases. They check behavio
 
 ## Submission files
 
-- [Two-page write-up PDF](submission/asset-intelligence-writeup.pdf): system design with the SVG on page 1; completed E4 results and a clearly labeled in-progress evaluation snapshot on page 2. The PDF pagination has been checked.
-- [Editable Word companion](submission/asset-intelligence-writeup.docx): the same content; Word/Google Docs pagination may vary.
+- [Markdown write-up](submission/writeup.md): page one explains the system design; page two lists all 21 observed test outputs with evidence verdicts. This is the current submission version.
 - [Video pitch script](submission/pitch-script.md) and [upload instructions](submission/UPLOAD-README.md).
-- The local `submission/flytbase-submission.zip` additionally contains all 21 captured answers, visual specifications, saved result rows and reports. This ZIP is intentionally ignored by Git; it excludes keys, runtime databases and private tool traces.
+- The local `submission/flytbase-submission.zip` contains the current Markdown write-up, status report, system diagram and supporting references. It is intentionally ignored by Git and excludes raw conversations, evaluation databases and credentials.
 
-Upload the PDF to Drive and use its share link in the write-up field. Record the narrated video separately, at most five minutes. The ZIP contains no video. Final portal submission is a manual user action.
+Upload `submission/writeup.md` to Drive and use its share link in the write-up field. Record the narrated video separately, at most five minutes. The ZIP contains no video. Final portal submission is a manual user action.
 
 Runtime data, credentials, private conversations, dependency folders and local inspection artifacts stay out of this repository. Models used at runtime and incomplete token usage are recorded where available; no measured dollar total is claimed. [DigitalOcean configuration details](docs/digitalocean.md) remain available for setup and troubleshooting.

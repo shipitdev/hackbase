@@ -1,41 +1,86 @@
-# Asset Intelligence Copilot — submission draft
+# Asset Intelligence Copilot
 
-## Problem and approach
+## Page 1 — System design
 
-Operators ask questions across inspection records, maintenance reports, operating rules and earlier discussions. The copilot uses read-only SQLite queries for calculations and cites the records behind an answer. Production is calculated from temperature above ambient, with type-specific thresholds; downtime follows the challenge's inspection convention. Final dataset: 600 wells across seven areas, as of 15 January 2027.
+**Purpose.** Give field operators answers from well inspections, maintenance reports, manuals and operating procedures, while keeping each answer traceable to its source. The released dataset contains 600 wells across seven areas. Calculations use the challenge’s date of **15 January 2027**.
 
-## System design
+```mermaid
+flowchart LR
+    DS[Released dataset] --> LD[Validated loader] --> SH[(Shared knowledge DB)]
+    U[Operator] --> UI[React chat + OpenUI]
+    UI --> API[FastAPI backend]
+    API --> CP[Copilot orchestrator]
+    CP <--> LLM[DigitalOcean inference router]
+    CP --> T[Five bounded tools]
+    T --> SH
+    T --> PR[(Private memory DB)]
+    T --> SR[(Saved query results)]
+    SR --> V[Answer + visual validation]
+    V --> UI
+```
 
-![System design](../docs/diagrams/video-system.svg)
+**How a question is answered.** The browser sends a question and its selected demo user to the FastAPI backend. One runtime copilot loop calls the DigitalOcean inference router and can use five bounded tools: `run_sql` for approved read-only calculations; `get_evidence` for source records; `search_documents` for manuals and SOPs; `memory_read` for permitted conversation memory; and `remember` for accepted scoped corrections or preferences. The model cannot run arbitrary SQL outside approved views or execute generated browser code.
 
-The system has three layers:
+**How data stays traceable.** The loader keeps original records, checks relationships and indexes the released manuals. Shared operational facts live in `knowledge.sqlite`; private conversations live in a separate `memory.sqlite`. The backend binds memory reads to the selected user and thread. Accepted corrections are stored separately from original readings and only affect their stated scope. Each SQL result is saved with its rows and source references before it can be used in an answer or visual.
 
-1. **Loader** — validates source records, preserves originals, applies accepted corrections as separate rows, and indexes manuals/SOPs for full-text search. Output: `knowledge.sqlite` (shared) and `memory.sqlite` (private).
-2. **Copilot loop** — a FastAPI backend binds user identity server-side and exposes five tools to the model: `run_sql` (read-only against approved views), `get_evidence`, `search_documents`, `memory_read`, `remember`. The model never writes to source data; corrections go through `remember` which validates scope, deduplicates retries, and writes to the corrections table. Query results are saved and referenced by ID — the model never types numbers into a chart.
-3. **Browser** — a React chat UI renders native OpenUI components (status card, table, line, bar, map, heatmap). The model proposes a display; server validation checks allowed components, result ownership, revision, columns and values against the saved result before the browser renders it. Numbers come from saved rows, never model-authored arrays.
+**How answers and visuals are checked.** The model proposes a response and an OpenUI description. The server checks the answer schema, evidence references, user ownership, dataset revision and visual component/result references. Tables and charts point to saved query results, so displayed numbers come from stored rows rather than model-authored arrays. Invalid answers return a safe explanation instead of an unverified visual.
 
-Shared knowledge and private conversations are in separate SQLite files. The analytics connection cannot open the private database. Every answer carries citations to record IDs, rule § clauses or saved result IDs, so a reviewer can verify any figure in one click.
+**Boundary.** The user selector is for a local demonstration; it is not production authentication. Sol and Luna were used as build-time orchestrator/workers. The shipped app has one runtime copilot, not a multi-agent runtime.
 
-A React chat interface renders native OpenUI programs chosen by the runtime model. Numbers come from saved query results, never model-authored arrays. A Node process runs the official parser and rejects executable actions or dynamic programs. The server checks user/thread ownership, source revision and column types before publishing a visual.
+---
 
-## Memory and corrections
+<div style="page-break-after: always"></div>
 
-Shared well facts and scoped corrections are stored separately from private user chats. Original readings remain available. Accepted field/rule changes affect later calculations at their stated scope. User switching does not expose another user's history. This is a local demo user picker, not public authentication.
+## Page 2 — Final evaluation outputs
 
-## Implementation and models
+**Run:** `context-pipeline-final` · **Dataset:** `dataset-7207fefc8284` · **Date:** 2027-01-15 · **Turns:** 21/21 attempted once on an isolated database and private-memory copy.
 
-FastAPI, SQLite, React/Vite, OpenUI and Leaflet. DigitalOcean inference-router with budget preference is the runtime model route. Actual serving model IDs and reported token usage are retained where available. Build work used Sol orchestration and bounded Luna assignments; these are separate from the runtime model. Credentials and runtime conversations are excluded from the repository.
+### Machine-readable result summary
 
-## Observed results and limitations
+```yaml
+http_200_partial: 13
+http_502_no_answer: 8
+http_504_timeout: 0
+explicit_context_limit_errors: 0
+answer_schema_or_citation_failures: 7
+sql_repair_failures: 1
+provider_errors:
+  invalid_response_format: 5
+  model_unavailable_for_account_tier_403: 2
+  rate_limit_or_credit_429: 1
+independently_source_supported: [Q1, Q9-2]
+provisional_saved_result_supported: [Q8-3, Q9-1]
+accuracy_percentage: null
+```
 
-See tasks/reports/E1-reviewed-results.md for the sample18-question evaluation. It contains partial answers, failures and unverified dependent scenarios; it is not an18/18 pass. Runtime repairs and visual completion have separate reports. No dollar cost is claimed from incomplete usage. Provider latency/timeouts remain a limitation. The final evaluation attempted all 11 questions / 21 turns in order on an isolated copy. Sixteen HTTP200 responses were partial and five calls timed out; most partials lacked usable evidence. Supported key conclusions were the refusal to infer oil volume (Q2) and Northwest Production’s Nathan Pierce /150-well answer (Q9-2). This is not a broad accuracy pass. Context/validation exhaustion and provider timeouts prevented most complex answers; see tasks/reports/E3-final-evaluation.md.
+**Interpretation.** Compared with the earlier E4 run (10 context-limit partials and 9 upstream errors), this run had no explicit context-limit response or 504. It still returned eight provider errors and seven answer-validation/citation failures. Two outputs were independently verified against source records. Two recall outputs matched their saved query results but were not independently scored against a separate oracle. This is not a broad accuracy score; HTTP 200 `partial` is not a correctness pass.
 
-## Final packaging still required
+### Per-turn outputs
 
-- Condense the reviewed final evaluation into the results page, with source support and failures.
-- Add the repository's license after confirming the intended license.
-- Export a readable 2–3 page write-up and record a narrated demo of at most5minutes.
-- Verify repository, video and write-up links; submit only with user authorization.
+| Test | Observed output | Evidence / verdict |
+|---|---|---|
+| Q1 | Refused to map reservoir pressure because no reservoir-pressure measurements exist; offered a field-status map alternative. | **Supported refusal.** 9 citations; consistent with the source-data check. |
+| Q2 | No answer; clarification failed the answer validator because it included factual content. | **Failed validation.** No result to assess. |
+| Q3 | No answer; provider returned an invalid response format (HTTP 502). | **Provider failure.** No table to assess. |
+| Q4 | No answer; final citation references could not be resolved. | **Failed validation.** No bypass table returned. |
+| Q5 | No answer; final response did not match schema for `limitations`. | **Failed validation.** No compliance table returned. |
+| Q6 | No answer; SQL query failed after one repair attempt. | **Query failure.** No disagreement table returned. |
+| Q7-1 | No answer; provider returned an invalid response format (HTTP 502). | **Provider failure.** No ranked repair list. |
+| Q7-2 | No answer; final response did not match schema for `limitations`. | **Failed validation.** No crew recommendation. |
+| Q8-1 | No answer; final response did not match schema for `limitations`. | **Failed validation.** Evaluation database stayed at revision 1; no shared correction was recorded. |
+| Q8-2 | Acknowledged U-601’s sorting, cost-format and citation preferences; stated private-memory persistence failed. | **Partial.** Preferences were not confirmed as durable memory. |
+| Q8-3 | Listed nine recalled pumps still in the ground and nine already replaced; returned a native OpenUI table and saved maintenance results. | **Provisional.** 38 citations and complete saved results; not independently oracle-scored. |
+| Q8-4 | No answer; provider returned an invalid response format (HTTP 502). | **Provider failure.** No shared-claim conflict response to assess. |
+| Q8-5 | No answer; provider returned an invalid response format (HTTP 502). | **Provider failure.** No area/cost table. |
+| Q9-1 | Reported nine recalled pumps across four areas (4 Northwest, 2 Southwest, 2 Northeast, 1 Southeast); returned a native OpenUI table. | **Provisional.** 22 citations and saved query results; not independently oracle-scored. |
+| Q9-2 | Named Nathan Pierce as Northwest Production lead and reported 150 wells; returned two OpenUI cards. | **Supported.** 4 citations; independently checked against team, user and asset records. |
+| Q9-3 | No answer; cited references could not be resolved. | **Failed validation.** No cold-weather SOP answer. |
+| Q9-4 | No answer; cited references could not be resolved. | **Failed validation.** No Dec 3 H2S answer. Source records contain no reading for that date. |
+| Q9-5 | No answer; provider returned an invalid response format (HTTP 502). | **Provider failure.** No production/repair follow-up. |
+| Q9-6 | No answer; provider returned HTTP 403 because the model was unavailable for the account tier. | **Provider failure.** No priority recommendation. |
+| Q10 | No answer; provider returned HTTP 403 because the model was unavailable for the account tier. | **Provider failure.** No area table or stacked bar chart. |
+| Q11 | No answer; provider returned HTTP 429 rate-limit/credit error. | **Provider failure.** No regional comparison. |
 
-## Evaluation status
-The completed E4 run captured all 21 turns: 12 HTTP 200 partial responses and 9 HTTP 502 errors. Only Q1 and Q9-2 were judged source-supported (2/21 verified answer coverage, not an accuracy rate). The later context-pipeline run was still in progress at the write-up update: 12/21 attempted, 9 HTTP 200 partials, 2 HTTP 502 errors, and 1 request pending. The new responses have not completed evidence review; these interim counts do not establish an accuracy improvement. See `context-pipeline-status.md`.
+**Reproducibility and privacy.** Run with `python3 scripts/evaluate_context_pipeline.py --run`; the one-attempt run state, prompts, responses, query results and isolated databases are saved under the ignored `data/evaluations/context-pipeline-final/`. Do not replay completed turns. The active demo database was not changed. The captured usage totals **1,988,031 tokens**; failed calls may omit usage, so this is a lower bound. No dollar cost is inferred.
+
+**Sources:** [Completed E4 report](https://github.com/shipitdev/hackbase/blob/main/tasks/reports/E4-final-rerun.md) · [Independent source checks](https://github.com/shipitdev/hackbase/blob/main/tasks/reports/E4-source-oracles.md) · [Context engineering change report](https://github.com/shipitdev/hackbase/blob/main/tasks/reports/R5-context-fix.md) · [Latest run status](context-pipeline-status.md).
