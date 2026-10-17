@@ -200,4 +200,3 @@ function textNode(typeName: string, props: Record<string, unknown>) {
 function isNode(value: unknown, typeName?: string): value is { type: "element"; typeName: string; props: Record<string, any>; partial: boolean } {
   return !!value && typeof value === "object" && (value as any).type === "element" && (!typeName || (value as any).typeName === typeName);
 }
-
