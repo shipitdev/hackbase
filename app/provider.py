@@ -7,6 +7,23 @@ import httpx
 from app.errors import AppError
 
 
+def _digitalocean_403_hint(response):
+    """Map explicit provider wording to safe categories without echoing its body."""
+    try:
+        body = response.text.lower()
+    except Exception:
+        body = ""
+    if any(term in body for term in ("invalid api key", "invalid access key", "expired api key", "revoked api key")):
+        return " DigitalOcean rejected the access key; verify that it is active and is a model access key or personal access token."
+    if any(term in body for term in ("model scope", "not authorized for model", "not permitted to use model", "no access to model", "model is not allowed")):
+        return " The key may not be scoped to this model; check its model list in DigitalOcean Model Access Keys."
+    if "vpc" in body and any(term in body for term in ("restrict", "network", "source")):
+        return " The key may be restricted to a different VPC; check its network restriction in DigitalOcean Model Access Keys."
+    if any(term in body for term in ("insufficient balance", "insufficient inference balance", "no inference balance", "insufficient credits", "balance is empty")):
+        return " DigitalOcean reports no available inference balance; check promotional credits and prepaid balances."
+    return " DigitalOcean denied the request. Check key status, model scope, VPC restriction, and inference balance."
+
+
 class CompatibleProvider:
     def __init__(self, model=None, base_url=None, api_key=None, *, transport=None):
         self.model = model or os.getenv("LLM_MODEL", "google/gemma-4-26b-a4b-it:free")
@@ -54,7 +71,10 @@ class CompatibleProvider:
             raise AppError("timeout", "Model provider timed out; the request can be retried.", 504) from exc
         except httpx.HTTPStatusError as exc:
             code = exc.response.status_code
-            hint = " Check provider credits/rate limits." if code in {402, 429} else " Check the configured model and credentials."
+            if self.digitalocean and code == 403:
+                hint = _digitalocean_403_hint(exc.response)
+            else:
+                hint = " Check provider credits/rate limits." if code in {402, 429} else " Check the configured model and credentials."
             raise AppError("provider_error", f"Model provider returned HTTP {code}.{hint}", 502) from exc
         except (httpx.RequestError, ValueError, KeyError, IndexError, TypeError) as exc:
             raise AppError("provider_error", "Model provider returned an invalid response or could not be reached.", 502) from exc

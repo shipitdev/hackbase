@@ -43,3 +43,11 @@ Local Git metadata cannot currently be created in this workspace. GitHub sync us
 ## Current validation
 
 The user configured the key and changed the calculation date to **17 October 2026**. Backend health confirms the date and credential configuration. A live smoke attempt failed before HTTP because this workspace cannot resolve the inference hostname; this does not validate or invalidate the key. Run `python3 scripts/check_provider.py` from a normal local terminal. No successful billable inference has been observed.
+
+## Diagnose HTTP 403
+
+Run `python3 scripts/check_provider.py --diagnose` from the terminal that received the 403. This requests only the model catalog, makes no inference calls, and prints a fixed diagnostic summary without response bodies or keys. A nonzero exit means the check did not confirm catalog visibility. Catalog visibility alone does not prove inference authorization.
+
+If denied, inspect the existing key in **Model Access Keys**: confirm that its model list includes the configured model and that its VPC setting permits this laptop. A Wi-Fi private-network setting is unrelated to a DigitalOcean VPC. Key model/VPC scopes cannot be changed after creation; if they are wrong, create an appropriately scoped key and replace only the local .env value. Do not rotate keys speculatively. Check eligible inference/promotional/prepaid balance if access or balance is suspended. See [DigitalOcean key settings](https://docs.digitalocean.com/products/inference/how-to/manage-model-access-keys/).
+
+After catalog access is confirmed, rerun the ordinary small smoke to test inference. If only inference returns403, its fixed guidance can help distinguish model scope or billing from catalog access. If the category is unknown, account/provider investigation is still required; the app does not bypass403 or silently fall back to another paid model.

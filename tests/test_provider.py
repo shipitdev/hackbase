@@ -83,6 +83,26 @@ def test_digitalocean_errors_are_safe(status, monkeypatch):
     assert "private provider payload" not in str(caught.value)
 
 
+@pytest.mark.parametrize(("body", "hint"), [
+    ('{"error":{"message":"key not authorized for model: private-id"}}', "model list in DigitalOcean Model Access Keys"),
+    ('{"error":{"message":"VPC network restriction: private-network"}}', "different VPC"),
+    ('{"error":{"message":"invalid api key: private-secret"}}', "access key"),
+    ('{"error":{"message":"insufficient inference balance: private-account"}}', "DigitalOcean reports no available inference balance"),
+    ('{"error":{"message":"private denial detail"}}', "DigitalOcean denied the request"),
+])
+def test_digitalocean_403_maps_only_safe_categories(body, hint, monkeypatch):
+    monkeypatch.delenv("LLM_API_KEY", raising=False)
+    monkeypatch.setenv("GRADIENT_MODEL_ACCESS_KEY", "secret-do-key")
+    provider = CompatibleProvider("model", "https://inference.do-ai.run/v1", transport=httpx.MockTransport(
+        lambda _: httpx.Response(403, text=body)
+    ))
+    with pytest.raises(AppError) as caught:
+        provider.complete([], [])
+    assert hint in str(caught.value)
+    assert "private-" not in str(caught.value)
+    assert "secret-do-key" not in str(caught.value)
+
+
 def test_gradient_key_is_not_used_for_generic_endpoint(monkeypatch):
     monkeypatch.delenv("LLM_API_KEY", raising=False)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)

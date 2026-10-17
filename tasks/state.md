@@ -59,3 +59,7 @@ Backend implementation and checks: [integration report](reports/backend-integrat
 ## Next action
 
 Next action: run python3 scripts/check_provider.py in a normal local shell with network access (workspace DNS is blocked), then one actual SQL/copilot question. Key is already configured. After live provider acceptance, build the frontend against docs/contracts.md. Keep six visual types, source inspection, user/thread switching and clear provider/partial-result errors. Follow exact file ownership and completion notifications. Do not rerun completed backend checks without a related change or unresolved risk.
+
+## Current blocker: user's live HTTP 403
+
+User's normal terminal now reaches HTTP403, while the agent workspace still cannot resolve/reach the endpoint. A fresh Luna-high worker verified endpoint/model/key/VPC/balance docs and added safe403 hints plus a GET-only --diagnose command. Sol reviewed and fixed balance phrase detection and diagnostic exit status. No model/key/scope was changed and no paid inference was made during this investigation. User was asked for the safe local diagnostic JSON and key-scope/VPC settings; actual403 cause remains unverified pending that information. Do not label inference fixed based on mock tests.
