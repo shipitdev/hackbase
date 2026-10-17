@@ -1,91 +1,96 @@
 # Asset Intelligence Copilot
 
-Python/FastAPI backend for the FlytBase asset-intelligence challenge. It loads the real sample data, runs restricted analytics tools, keeps shared corrections separate from private chats, and returns source-backed answers with model-generated OpenUI cards, tables, line/bar charts, maps and heatmaps. The React chat prototype uses the same private history and evidence APIs.
+A local chat application for the FlytBase asset-intelligence challenge. FastAPI and SQLite combine well records, operating documents, operator notes and private conversation history. React and OpenUI render result-backed cards, tables, charts, maps and heatmaps with inspectable evidence.
 
-## Run locally
+The final dataset contains **600 wells across seven areas**, with calculations anchored to **15 January 2027**. The latest completed full evaluation produced **two source-supported answers across 21 turns**. This is a prototype with substantial remaining reliability limits; returned HTTP responses are not accuracy passes.
 
-Use Python 3.11+ and install the dependencies in a virtual environment:
+## Start locally
+
+Requirements: Python 3.11+, Node 22.12+ and npm. From a fresh application checkout:
 
 ```sh
 python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
+.venv/bin/python -m pip install -r requirements.txt
+npm --prefix frontend ci
+```
+
+Obtain the separate official dataset if `dataset/` is absent:
+
+```sh
+git clone https://github.com/FlytBaseAILabs/flytbase-ahc-swe-asset-intelligence-dataset.git dataset
+git -C dataset checkout 009e2b5
+```
+
+Create `.env` from `.env.example` **only if `.env` does not already exist**. Set your DigitalOcean model access key in `GRADIENT_MODEL_ACCESS_KEY`. Never commit the key. The demo settings are:
+
+```dotenv
+LLM_BASE_URL=https://inference.do-ai.run/v1
+LLM_MODEL=inference-router
+LLM_ROUTING_PREFERENCE=budget
+ANALYSIS_DATE=2027-01-15
+LLM_CALL_TIMEOUT_SECONDS=90
+ANSWER_TIMEOUT_SECONDS=240
+```
+
+Load a fresh knowledge database and start the backend:
+
+```sh
 .venv/bin/python -m app.load dataset/test-data/dataset --db data/knowledge.sqlite
 .venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
-In another terminal, install the frontend dependencies (Node 22.12+), then start the chat:
+In a second terminal:
 
 ```sh
-npm --prefix frontend ci
 npm --prefix frontend run dev
 ```
 
-Open [the chat](http://127.0.0.1:5173), select a dataset user and start a new chat. Keep both terminals running. Source links open evidence in the side panel. Chat history is stored on the backend; switching users clears the previous user's visible conversation. The calculation date is 17 October 2026.
+Open [the chat](http://127.0.0.1:5173), select a user and start a new conversation. API documentation is at [localhost:8000/docs](http://127.0.0.1:8000/docs); readiness and the calculation date are at `/api/health`. The backend reads `.env`; existing shell environment values take precedence. Restart it after configuration changes. Node and the installed frontend dependencies are also required by the backend's native OpenUI validator.
 
-The native OpenUI validator also needs Node and the installed frontend dependencies when the backend answers a question. No browser API key is needed. Vite proxies `/api` to the local backend; neither server needs public exposure.
+An existing sample database must be backed up before replacement: the final release revises older records. Follow the [release runbook](docs/released-data.md). The loader rejects conflicting IDs; do not overwrite or delete private memory to resolve them.
 
-Open [API documentation](http://127.0.0.1:8000/docs) or `/api/health`. Loading the dataset does not need a model key. The server reports `ready` for data availability and `chat_ready` separately for provider configuration.
+## How an answer travels
 
-If the dataset is absent, obtain the [official dataset repository](https://github.com/FlytBaseAILabs/flytbase-ahc-swe-asset-intelligence-dataset) locally and point the loader at its `test-data/dataset` directory.
+1. The loader validates source records and stores originals, rules and searchable documents in `data/knowledge.sqlite`.
+2. The API checks the selected user and conversation. The model can call five tools: `run_sql`, `get_evidence`, `search_documents`, `memory_read` and `remember`.
+3. Restricted read-only SQL calculates from approved views. Shared corrections retain provenance; original measurements remain available. Source rules and operator notes determine the applicable interpretation.
+4. Private chats, tool traces and saved query results live in `data/memory.sqlite`. Private lookups are owner-checked; analytics SQL cannot read that database.
+5. The model proposes native OpenUI. Server validation checks allowed components, result ownership, revision, columns and values. The browser renders saved rows, rather than model-authored data arrays.
 
-## Runtime model
+The user picker is a **demo identity mechanism**, not production authentication. Keep both services on loopback. Streaming and public deployment authentication are not implemented. Sol/Luna are build-time workers; the product uses one runtime copilot loop.
 
-DigitalOcean serverless inference is the current setup. Copy `.env.example` to `.env` if it is absent, then paste your **model access key** into `GRADIENT_MODEL_ACCESS_KEY`. Do not paste it into chat or commit it. The backend automatically reads this project's `.env`; existing shell settings take precedence. Restart the server after changing the file.
+See the [system design](docs/system-design.md), [contracts](docs/contracts.md), [architecture SVG](docs/diagrams/video-system.svg) and [editable Excalidraw](docs/diagrams/video-system.excalidraw).
 
-The endpoint is `https://inference.do-ai.run/v1`. The provider uses OpenAI-compatible **Chat Completions** with function tools. See [DigitalOcean setup and budget](docs/digitalocean.md) for the selected model, pricing sources and inexpensive connectivity test. A generic `LLM_API_KEY` is also supported.
+## Evaluation and limitations
 
-Other providers remain configurable through `LLM_BASE_URL`, `LLM_MODEL`, and `LLM_API_KEY`. OpenRouter also accepts `OPENROUTER_API_KEY`. For local Ollama, use `http://127.0.0.1:11434/v1` and an installed tool-capable model; loopback providers need no key. OpenCode editor access alone does not configure backend model access.
+The final questions are in the official dataset's `test-data/final-questions.md`. The completed **E4** rerun asked all 11 questions and their follow-ups in order, using one isolated shared state and user-private conversations, with one attempt per turn:
 
-Missing credentials produce an explicit error. Automated tests use scripted models/HTTP transports; they do not establish live model answer quality. No automatic provider fallback or retry loop spends extra credits.
+- 21 turns captured: 12 HTTP 200 partial responses and nine provider errors caused by upstream HTTP 400 responses; no HTTP 504 timeout occurred.
+- Ten partial responses stopped at the application context limit.
+- Q1 returned a supported refusal to invent reservoir-pressure measurements. Q9 turn 2 correctly named Nathan Pierce and 150 Northwest Production wells.
+- The other 19 turns did not produce verifiable answers. No general accuracy percentage or complete-suite pass is claimed.
 
-## API flow
+The [E4 report](tasks/reports/E4-final-rerun.md) records the outputs, limitations and usage lower bound. [Independent source checks](tasks/reports/E4-source-oracles.md) provide reference results; they are not copilot answers. Earlier runs remain separate.
 
-1. `GET /api/users` → select a dataset user ID.
-2. `POST /api/threads` with `{"user_id":"U-201"}` → get a thread ID.
-3. `POST /api/chat` with `request_id`, `user_id`, `thread_id`, `text`.
-4. Inspect returned `answer`, `ui`, `results`, `citations`, `conflicts` and `limitations`. The model writes the native OpenUI program; `results` contains only server-saved data. Old saved responses retain their original component format.
-5. Use `/api/threads/{id}/messages?user_id=...`, `/api/results/{id}?user_id=...` or `/api/evidence/{id}?user_id=...` for saved detail. URL-encode a source section's `#` as `%23`.
+After E4, the provider request was changed to retain tool definitions while using `tool_choice: none` for final synthesis. That repair has offline test evidence, not a post-fix full-suite score. Runtime context reduction is being reviewed separately; the E4 results must not be presented as a test of unmeasured later changes. Increasing timeouts does not solve context growth. No automatic provider retries or model fallbacks are enabled. The development proxy waits up to 300 seconds.
 
-Reuse a request ID only to retry the **same** text/user/thread. Completed requests return their saved answer; mismatched IDs and overlapping requests are rejected. A retry does not duplicate saved turns or a shared change.
-
-This is a **local demo user picker**, not authenticated access control for public deployment. Selected-user ownership is enforced for private threads/results, but anyone with local API access can select a dataset user. Keep it bound to loopback.
-
-## Checks and references
-
-```sh
-python3 -m pytest -q
-```
-
-Tests use temporary databases. Runtime databases and credentials are ignored; source data/research is preserved. Calculations use 17 October 2026, separate from conversation timestamps. New records can be loaded with the same loader; conflicting existing IDs fail without discarding active data or runtime feedback.
-
-Read [system design](docs/system-design.md), [contracts](docs/contracts.md), [state](tasks/state.md) and [backend interfaces](tasks/briefs/backend-interfaces.md) for development. Worker ownership/reports remain in `tasks/`; the overall checklist still includes future frontend and submission work.
-
-## OpenUI compatibility proof
+## Checks
 
 ```sh
-npm --prefix frontend ci
+.venv/bin/python -m pytest -q tests/test_provider.py tests/test_agent.py tests/test_store.py
 npm --prefix frontend run check:openui
+npm --prefix frontend run build
 ```
 
-This checks native OpenUI parsing, result-backed Card/Table widgets, schema/prompt drift, rejected dynamic programs, and ReactDOM server rendering. The shared library now supports all six required views, including stopped-reading markers, map tile fallback and explicit heatmap zeros versus unknowns. See the [native OpenUI plan](docs/05-frontend-openui.md). Dependencies are pinned; a targeted KaTeX override fixes the reported low-severity audit chain.
+Offline tests use scripted providers and temporary databases. They check behavior and safeguards, not live answer accuracy. `scripts/check_backend_question.py` and evaluation scripts use the configured paid provider; do not run them as part of an ordinary offline test command. Saved evaluations fence attempts against automatic replay.
 
-The opt-in real backend check is `python3 scripts/check_backend_question.py`. It can report `pass_with_limitations` when the answer's data and sources pass but observation/provenance caveats remain. It uses the configured paid provider and isolated temporary state.
+## Submission files
 
-Build the browser bundle with `npm --prefix frontend run build`. This creates `frontend/dist`; it does not deploy the application. `npm --prefix frontend run preview` previews that build with the local API proxy. Streaming is not implemented. All six views have parser/rendering and browser fixture checks; their selection and answer accuracy still need final live evaluation.
+- [Two-page write-up PDF](submission/asset-intelligence-writeup.pdf): system design with the SVG on page 1; observed E4 answers and failures on page 2. The PDF pagination has been checked.
+- [Editable Word companion](submission/asset-intelligence-writeup.docx): the same content; Word/Google Docs pagination may vary.
+- [Video pitch script](submission/pitch-script.md) and [upload instructions](submission/UPLOAD-README.md).
+- The local `submission/flytbase-submission.zip` additionally contains all 21 captured answers, visual specifications, saved result rows and reports. This ZIP is intentionally ignored by Git; it excludes keys, runtime databases and private tool traces.
 
-The user-requested [taste-skill](https://github.com/Leonxlnx/taste-skill) bundle is installed locally under `.agents/skills/` (ignored). Its original frontend design guidance informs the app's typography, spacing, states and responsive layout; no marketing-page animations or additional UI framework were added. `skills-lock.json` records the source for reinstalling with `npx skills add Leonxlnx/taste-skill`.
+Upload the PDF to Drive and use its share link in the write-up field. Record the narrated video separately, at most five minutes. The ZIP contains no video. Final portal submission is a manual user action.
 
-## Released test data
-
-Stage the received dataset without changing the active app:
-
-```sh
-python3 scripts/preflight_dataset.py /path/to/released-data --db /tmp/released-alone.sqlite
-python3 scripts/preflight_dataset.py /path/to/released-data --base-db data/knowledge.sqlite --db /tmp/released-merged.sqlite
-```
-
-Both output paths must be new. Review counts, report coverage, references and collisions before loading active data. Follow [the backup and promotion runbook](docs/released-data.md); preserve shared corrections and private memory. The released dataset has not been validated before arrival.
-
-Final release: 600 wells, 7 areas; set `ANALYSIS_DATE=2027-01-15`. Existing sample databases must be backed up and replaced with a fresh load because the release revises older records. See [release runbook](docs/released-data.md).
-
-Inference budgets are configurable: `LLM_CALL_TIMEOUT_SECONDS=90` and `ANSWER_TIMEOUT_SECONDS=240` in the demo configuration. The development proxy waits300seconds. These reduce premature cancellation; external provider limits and the separate context/validation limits can still fail. No automatic inference retries are enabled.
+Runtime data, credentials, private conversations, dependency folders and local inspection artifacts stay out of this repository. Models used at runtime and incomplete token usage are recorded where available; no measured dollar total is claimed. [DigitalOcean configuration details](docs/digitalocean.md) remain available for setup and troubleshooting.
