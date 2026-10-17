@@ -1,6 +1,6 @@
-# System design — the application we will build
+# System design — implemented application
 
-This is the implementation map for the [four-hour plan](../tasks/plan.md). [Strategy](strategy.md) explains the decisions; [contracts](contracts.md) fixes how the pieces connect. Editable drawings are in [diagrams](diagrams/README.md).
+This is the implementation reference for the [four-hour plan](../tasks/plan.md). [Strategy](strategy.md) explains the decisions; [contracts](contracts.md) fixes how the pieces connect. Editable drawings are in [diagrams](diagrams/README.md).
 
 ## The whole system
 
@@ -30,7 +30,7 @@ The model helps choose queries and presentation. Ordinary code owns calculations
 | Browser | Chat, user picker, generated components and inspectable evidence | `frontend/src/App.tsx`, `Visual.tsx`, `api.ts`, `types.ts`, `styles.css` |
 | Checks | Calculations/loading, multi-user sequences, actual browser output | Focused files under `tests/`; browser checks |
 
-Paths are planned, not scaffolding already generated. Only add a module when its task needs it. The orchestrator freezes names before workers implement against them.
+The modules above are implemented. The frontend currently renders answers through `frontend/src/components/AnswerView.tsx` and `frontend/src/genui/library.tsx`; older planned filenames are not API contracts.
 
 ## Storage and responsibility
 
@@ -45,7 +45,7 @@ A result is private even when its contributing source records are shared: reveal
 ## One question, end to end
 
 1. Browser sends selected user, owned thread, message and a unique request ID.
-2. API validates them and stores the user turn. It pins calculations to 17 October 2026; conversation timestamps remain separate.
+2. API validates them and stores the user turn. It pins final-dataset calculations to 15 January 2027; conversation timestamps remain separate.
 3. The copilot receives tool instructions, the small rulebook, relevant permitted history and shared context. Large records remain outside the prompt.
 4. It calls `run_sql`, `get_evidence`, `search_documents`, `memory_read` or `remember`. The server validates every call and supplies the user identity itself.
 5. Read tools return result references, previews, evidence and completeness information. Accepted writes commit before dependent reads; retries cannot repeat a write.
@@ -59,7 +59,7 @@ First version returns a complete JSON answer over HTTP. Show a pending state whi
 
 One shared calculation path applies original data → accepted correction → derived value → applicable rule/deadline → total or presentation. Do not have separate UI-only status or compliance calculations.
 
-Required foundations are the 15°C/20°C production rules, seven days per stopped inspection, corrected spill counts/volumes, reporting/containment/verification deadlines, same-equipment RCA and repair costs by start date. Read all compliance rows, including WS failures. Preserve report text and recompute conclusions affected by corrections.
+Required foundations are the 15°C/20°C/25°C production rules, seven days per stopped inspection, corrected spill counts/volumes, reporting/containment/verification deadlines, same-equipment RCA and repair costs by start date. Read all compliance rows, including WS failures. Preserve report text and recompute conclusions affected by corrections.
 
 Keep proven failure, possible missing-evidence failure, pending action and unknown distinct. The dataset guide and [rule notes](02-dataset.md) govern exact details; [the review](00-review.md) records Q9’s ambiguity.
 
@@ -67,7 +67,7 @@ Keep proven failure, possible missing-evidence failure, pending action and unkno
 
 Use a component list with six data displays: card, table, line, bar, map and heatmap. Text explanation, disagreement notices and source details surround those displays. A bar chart and table can share the same result reference, guaranteeing the same underlying numbers.
 
-The implemented backend still returns validated component JSON. The user selected a native OpenUI frontend: the next contract will carry model-generated OpenUI Lang with result-backed components, reuse existing OpenUI widgets, and add map/heatmap support. Validate this integration before migrating the live path. No generated executable code is allowed. See the [OpenUI plan](05-frontend-openui.md) and [layout](ui-layout.md).
+The backend returns model-generated native OpenUI Lang with six allowed result-backed displays. The official parser and server validate component structure, saved result ownership, knowledge revision and data types. The browser renders saved rows through the allowed components, including custom map and heatmap views. Historical component JSON remains readable. No generated executable code is allowed. See the [OpenUI plan](05-frontend-openui.md) and [layout](ui-layout.md).
 
 ## Loading new data
 
@@ -81,4 +81,7 @@ Read-only SQL has authorization, time/output limits and no extension/attachment 
 
 Scope-check writes, keep request IDs to prevent duplication, validate citations/results and preserve disagreements. Treat document text as evidence rather than instructions. Test repeat loads, threshold equality, duplicate-join risk, correction cascades, private-memory rejection, longer recall and real browser rendering.
 
-Public deployment, authentication infrastructure, vector search, model training and runtime multi-agent orchestration remain outside this build. Runtime model access is still a preflight dependency.
+Public deployment, authentication infrastructure, vector search, model training and runtime multi-agent orchestration remain outside this build. Runtime model access uses DigitalOcean serverless inference through `inference-router` with budget routing. Build-time Sol/Luna agents are separate from this runtime loop.
+
+## Final release replacement
+The official final release revises older source rows, so the user authorized a fresh baseline rather than an append-only merge. Both stores were backed up, private memory preserved, and the shared revision incremented. The active baseline has 600 wells across seven areas as of 15 January 2027. See [release runbook](released-data.md) for the activation record.

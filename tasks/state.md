@@ -47,3 +47,8 @@ Luna medium implemented shrinkable grid row/sidebar and bounded scrollable error
 - Backup: ignored `data/backups/before-final-20261017-164055/`; both SQLite stores preserved; zero shared changes at backup. Backend restarted PID32961, exec session36170, health ready/chat_ready.
 - D2 compatibility accepted; ownership returned. T500 thresholds, source data corrections, history/status/raw payload columns integrated. Worker8 focused tests pass; root release test1pass, agent20pass, API4pass; frontend build pass.
 - Ownership active: final_eval Luna high owns scripts/evaluate_final.py, tasks/reports/E3-final-evaluation.md and private data/evaluations/final-release/. Root authorized paid run after activation. Snapshot isolated, ordered, no automatic retries; root does not run paid evaluation.
+
+## Video assignment
+- Accepted video_demo Luna medium; ownership returned: docs/diagrams/video-system.excalidraw, docs/diagrams/video-system.svg, submission/pitch-script.md, tasks/reports/V1-video-demo.md. One-/two-word diagram labels, database shapes, actual runtime flow, simple narrated script; accuracy placeholders pending E3. No application changes or paid calls.
+
+V1 accepted: 16:9 editable Excalidraw + SVG, mixed shapes/database cylinders, five tools and saved-result/nativeUI flow reviewed. Pitch script ~90sec design + live demo + results placeholders, total<5min. MCP checkpoint397bfffa662d43ee82. User records narration/demo; final accuracy still awaits E3.

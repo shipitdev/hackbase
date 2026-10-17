@@ -26,3 +26,9 @@ Open an editable file in Excalidraw to pan, zoom and change it. For an orchestra
 Checkpoint IDs help identify the widgets in this session; local files are the durable reference. Future widget edits are not automatically synchronized into these files. If editing a live widget, first read its current state using an available widget-context tool so user edits are preserved; if that tool is unavailable, use the local file as the explicit source and create a fresh view. Save updated native files/previews and update this index when accepting a design change.
 
 The native files contain standard Excalidraw elements, without MCP camera commands. SVG/PNG previews were generated from the same saved scene geometry and checked for text fitting. They are not screenshots of a running application.
+
+## Implemented video reference
+
+[Video architecture — editable Excalidraw](video-system.excalidraw) · [widescreen SVG](video-system.svg) · [plain-language pitch script](../../submission/pitch-script.md). This newer drawing describes the implemented final-release flow, with database cylinders, five tools, private/shared stores and validated native OpenUI. It supersedes the old planning system drawing for the video.
+
+MCP checkpoint `397bfffa662d43ee82`; local files remain the durable references.
