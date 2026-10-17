@@ -85,6 +85,7 @@ def test_digitalocean_errors_are_safe(status, monkeypatch):
 
 @pytest.mark.parametrize(("body", "hint"), [
     ('{"error":{"message":"key not authorized for model: private-id"}}', "model list in DigitalOcean Model Access Keys"),
+    ('{"error":{"message":"Model is not available on the current account tier: private-id"}}', "account tier"),
     ('{"error":{"message":"VPC network restriction: private-network"}}', "different VPC"),
     ('{"error":{"message":"invalid api key: private-secret"}}', "access key"),
     ('{"error":{"message":"insufficient inference balance: private-account"}}', "DigitalOcean reports no available inference balance"),

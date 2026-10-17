@@ -40,7 +40,7 @@ def test_smoke_rejects_unrequested_tools_before_continuing(monkeypatch):
 @pytest.mark.parametrize(("status", "body", "expected"), [
     (200, {"data": [{"id": "model"}]}, {"http_status": 200, "model_visible": True, "status": "ok"}),
     (200, {"data": [{"id": "other"}]}, {"http_status": 200, "model_visible": False, "status": "ok"}),
-    (403, {"error": {"message": "private provider detail"}}, {"http_status": 403, "model_visible": None, "status": "forbidden", "guidance": "DigitalOcean denied the request. Check key status, model scope, VPC restriction, and inference balance.", "checks": ["key status", "model scope", "VPC restriction", "inference balance"]}),
+    (403, {"error": {"message": "private provider detail"}}, {"http_status": 403, "model_visible": None, "status": "forbidden", "guidance": "DigitalOcean denied the request. Check account tier, key status, model scope, VPC restriction, and inference balance.", "checks": ["account tier", "key status", "model scope", "VPC restriction", "inference balance"]}),
 ])
 def test_diagnostic_only_checks_catalog_and_never_returns_body(monkeypatch, status, body, expected):
     calls = []

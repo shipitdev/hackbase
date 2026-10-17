@@ -15,13 +15,15 @@ def _digitalocean_403_hint(response):
         body = ""
     if any(term in body for term in ("invalid api key", "invalid access key", "expired api key", "revoked api key")):
         return " DigitalOcean rejected the access key; verify that it is active and is a model access key or personal access token."
+    if "tier" in body and any(term in body for term in ("not available", "not permitted", "not have access", "does not support", "restricted")):
+        return " DigitalOcean reports that this model is unavailable for the account tier; check the team's Inference limits before changing keys or models."
     if any(term in body for term in ("model scope", "not authorized for model", "not permitted to use model", "no access to model", "model is not allowed")):
         return " The key may not be scoped to this model; check its model list in DigitalOcean Model Access Keys."
     if "vpc" in body and any(term in body for term in ("restrict", "network", "source")):
         return " The key may be restricted to a different VPC; check its network restriction in DigitalOcean Model Access Keys."
     if any(term in body for term in ("insufficient balance", "insufficient inference balance", "no inference balance", "insufficient credits", "balance is empty")):
         return " DigitalOcean reports no available inference balance; check promotional credits and prepaid balances."
-    return " DigitalOcean denied the request. Check key status, model scope, VPC restriction, and inference balance."
+    return " DigitalOcean denied the request. Check account tier, key status, model scope, VPC restriction, and inference balance."
 
 
 class CompatibleProvider:

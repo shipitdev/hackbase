@@ -51,3 +51,15 @@ Run `python3 scripts/check_provider.py --diagnose` from the terminal that receiv
 If denied, inspect the existing key in **Model Access Keys**: confirm that its model list includes the configured model and that its VPC setting permits this laptop. A Wi-Fi private-network setting is unrelated to a DigitalOcean VPC. Key model/VPC scopes cannot be changed after creation; if they are wrong, create an appropriately scoped key and replace only the local .env value. Do not rotate keys speculatively. Check eligible inference/promotional/prepaid balance if access or balance is suspended. See [DigitalOcean key settings](https://docs.digitalocean.com/products/inference/how-to/manage-model-access-keys/).
 
 After catalog access is confirmed, rerun the ordinary small smoke to test inference. If only inference returns403, its fixed guidance can help distinguish model scope or billing from catalog access. If the category is unknown, account/provider investigation is still required; the app does not bypass403 or silently fall back to another paid model.
+
+## Catalog succeeds but Haiku inference returns403
+
+The user confirmed `http_status:200, model_visible:true` for `/models`. This confirms catalog visibility only. DigitalOcean's [Inference limits](https://docs.digitalocean.com/products/inference/details/limits/) explicitly exclude Anthropic models for Tier1 and Tier2 accounts, even though the catalog can list them. Account tier is therefore a plausible cause; the actual account tier and POST denial reason remain unverified.
+
+Test a documented Tier1/2 exception without changing `.env`:
+
+```sh
+LLM_MODEL=openai-gpt-oss-120b python3 scripts/check_provider.py
+```
+
+The command makes at most two small inference requests; it is not an automatic fallback. DigitalOcean's ID is `openai-gpt-oss-120b`; published input/output pricing is $0.10/$0.70 per million tokens. The original model supports function calling ([OpenAI model docs](https://developers.openai.com/api/docs/models/gpt-oss-120b)); DigitalOcean's hosted behavior still needs this test. Keep the existing `.env` model until a tool roundtrip is confirmed. A token-limit/truncation error would be a separate issue from403 and should be diagnosed separately. Do not pay for an account upgrade just to test this hypothesis.
