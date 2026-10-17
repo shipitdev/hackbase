@@ -224,7 +224,7 @@ class MemoryStore:
             saved = dict(answer) if isinstance(answer, dict) else {"answer": str(answer)}
             saved["message_id"] = msg_id
             ids = _ids(saved.get("entity_ids"))
-            used_result_ids = _ids(saved.get("result_ids"))
+            used_result_ids = _ids([*(saved.get("result_ids") or []), *saved.get("results", {}).keys()])
             if saved.get("result_id") and str(saved["result_id"]) not in used_result_ids:
                 used_result_ids.append(str(saved["result_id"]))
             for component in saved.get("components", []):

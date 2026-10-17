@@ -1,6 +1,6 @@
 # Four-hour build plan
 
-**Status: backend implementation in progress; frontend pending.** GPT-6.1 Sol is the sole build orchestrator, with bounded GPT-6 Luna worker tasks. Use [the checklist](todo.md) for acceptance, [the system design](../docs/system-design.md) for implementation, and [orchestration rules](../docs/orchestration.md) for dispatch/review.
+**Status: backend and native OpenUI Card/Table chat prototype implemented; browser acceptance in progress.** GPT-6.1 Sol is the sole build orchestrator, with bounded GPT-6 Luna worker tasks. Use [the checklist](todo.md) for acceptance, [the system design](../docs/system-design.md) for implementation, and [orchestration rules](../docs/orchestration.md) for dispatch/review.
 
 ## What we are aiming to finish
 

@@ -48,4 +48,4 @@ Before finishing, walk your output and verify:
 
 - Use only ResultCard and ResultTable inside AnswerLayout.
 - Never invent row values, result IDs, or columns.
-- Do not use Query, Mutation, functions, actions, variables, or dynamic expressions.
+- Do not use Query, Mutation, functions, actions, reactive state, or dynamic expressions. Static component references are allowed.

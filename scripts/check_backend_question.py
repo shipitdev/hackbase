@@ -43,6 +43,19 @@ def _snapshot(source, target):
         source_db.close()
 
 
+def _displayed_components(answer):
+    """Inspect native programs with the same official parser; retain historical checks."""
+    if answer.get("ui_format") != "openui-lang":
+        return answer.get("components", [])
+    if not answer.get("ui"):
+        return []
+    from app.openui import validate_ui
+    results = answer.get("results", {})
+    parser_results = {key: {"columns": [column["name"] for column in value["columns"]],
+                            "rows": [{} for _ in value["rows"][:2]]} for key, value in results.items()}
+    return [{**view, "data": results[view["result_id"]]} for view in validate_ui(answer["ui"], parser_results)]
+
+
 def _check_answer(answer, expected):
     status = answer.get("status")
     if status not in {"complete", "partial"}:
@@ -54,7 +67,8 @@ def _check_answer(answer, expected):
         raise CheckFailure("answer text does not state the independently checked production state")
     if not expected.get("producing") and not any(term in prose for term in ("not producing", "not currently producing", "isn't producing", "not in production")):
         raise CheckFailure("answer text does not state the independently checked production state")
-    cards = [c for c in answer.get("components", []) if c.get("type") == "card"]
+    components = _displayed_components(answer)
+    cards = [c for c in components if c.get("type") == "card"]
     cards = [c for c in cards if {"asset_id", "producing"} <= set(c.get("mapping", {}).get("fields", []))]
     if not cards:
         raise CheckFailure("answer.components has no status card containing asset_id and producing")
@@ -80,7 +94,7 @@ def _check_answer(answer, expected):
     if card["data"].get("complete") is not True or card["data"].get("truncated"):
         raise CheckFailure("status card query result is incomplete or truncated")
     result_citations = {c.get("id"): c for c in answer.get("citations", []) if c.get("kind") == "query_result"}
-    for component in answer.get("components", []):
+    for component in components:
         saved = result_citations.get(component.get("result_id"), {}).get("content", {})
         if not saved or saved.get("rows") != component.get("data", {}).get("rows") or not saved.get("complete", True) or saved.get("truncated"):
             raise CheckFailure("component rows do not match a complete cited saved query result")
@@ -140,7 +154,7 @@ def run(database=ROOT / "data" / "knowledge.sqlite", provider=None, diagnostic_p
             except CheckFailure as exc:
                 _save_diagnostic(diagnostic_path, answer, str(exc))
                 raise
-            for component in answer.get("components", []):
+            for component in _displayed_components(answer):
                 result_id = component.get("result_id")
                 stored = client.get(f"/api/results/{result_id}", params={"user_id": user_id})
                 if stored.status_code != 200 or stored.json().get("rows", []) != component["data"]["rows"]:

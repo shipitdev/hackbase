@@ -2,7 +2,7 @@
 
 **Decision, 17 October 2026:** the user chose direct OpenUI Lang generation. This replaces the earlier plan to generate a JSON component list and translate it in the browser. Build a narrow integration first, then the complete chat interface. Existing source data, calculation rules, private memory and DigitalOcean model access stay in place.
 
-**Execution status:** P0 passes with installed/pinned packages: official headless parsing, same-library schema/prompt generation, result-backed built-in Card/Table widgets and ReactDOM server rendering. Root added guard checks and patched the KaTeX advisory chain; npm audit now reports zero vulnerabilities. This proves compatibility, not a browser app or native backend response. The backend real question now passes independent numeric/source/saved-result checks with limitations preserved. The final observed response took82seconds.
+**Execution status:** P0, native backend v2 and the Card/Table chat prototype are implemented and reviewed. A real DigitalOcean browser question produced a native card plus table with seven resolved sources; independent data/source checks pass_with_limitations. The initial request timed out; one manual retry succeeded in64065ms with no duplicate user turn. User switching/history/evidence and mobile layout were browser-checked. Backend78tests and strict frontend production build pass; npm reports zero vulnerabilities. Four additional displays and all18 live scenarios remain pending.
 
 ## What the user sees
 
@@ -35,7 +35,7 @@ Proposed response additions:
 - Server-owned `results`: the exact saved rows/columns needed by the accepted program, with result IDs, query/source versions and completeness metadata.
 - Retire the model-authored `components` list for the native path. Old stored answers retain their original format and can be labeled historical; do not rewrite their values or pretend they are OpenUI programs.
 
-The exact field migration is frozen only after the first parser/renderer check succeeds. Do not duplicate the same UI in both OpenUI Lang and a model-authored JSON component manifest.
+The v2 field migration is now frozen in docs/contracts.md after the parser/renderer check succeeded. Do not duplicate the same UI in both OpenUI Lang and a model-authored JSON component manifest.
 
 Expose result-backed component signatures, for example:
 
@@ -91,7 +91,7 @@ Keep assignments small and disjoint. Workers report on completion; do not poll. 
 - `frontend/scripts/check-openui.tsx`: generate schema/prompt, parse a known program, server-render its components and assert exact supplied values.
 - Generated schema/prompt under `frontend/src/genui/generated/`; document how to regenerate and check drift.
 
-P0 is now implemented. Run `npm --prefix frontend run check:openui` to check generated schema/prompt drift, native parsing restrictions and server rendering against fictional trusted data. Node22.19/npm10.9 were used; exact dependencies are pinned in package.json and package-lock.json. A browser build and live model-generated OpenUI answer are still pending.
+P0 is now implemented. Run `npm --prefix frontend run check:openui` to check generated schema/prompt drift, native parsing restrictions and server rendering against fictional trusted data. Node22.19/npm10.9 were used; exact dependencies are pinned in package.json and package-lock.json. The browser build and one actual model-generated Card/Table answer now pass.
 
 ## Evidence and unresolved work
 

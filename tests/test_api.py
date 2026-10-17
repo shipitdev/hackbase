@@ -27,7 +27,7 @@ class Model:
         if self.calls % 2:
             return {'message':{'role':'assistant','tool_calls':[{'id':'query','type':'function','function':{'name':'run_sql','arguments':json.dumps({'sql':'SELECT asset_id FROM assets'})}}]}}
         result=json.loads(messages[-1]['content'])
-        return {'message':{'content':json.dumps({'answer':'The selected well is WELL-0001.','components':[{'id':'card','type':'card','title':'Well','result_id':result['result_id'],'mapping':{'fields':['asset_id']}}],'citation_refs':['INS-0001-0203'],'conflicts':[],'limitations':[],'entity_ids':['WELL-0001']})}}
+        return {'message':{'content':json.dumps({'answer':'The selected well is WELL-0001.','ui':'root = AnswerLayout([card])\ncard = ResultCard('+json.dumps(result['result_id'])+', "Well", ["asset_id"])','citation_refs':['INS-0001-0203'],'conflicts':[],'limitations':[],'entity_ids':['WELL-0001']})}}
 
 
 @pytest.fixture
@@ -45,12 +45,12 @@ def test_api_threads_chat_cache_and_result_ownership(client):
     body={'request_id':'request1','user_id':'A','thread_id':t,'text':'Show one well'}
     response=c.post('/api/chat',json=body)
     assert response.status_code == 200, response.text
-    answer=response.json();assert answer['components'][0]['data']['rows']==[{'asset_id':'WELL-0001'}]
+    answer=response.json();assert next(iter(answer['results'].values()))['rows']==[{'asset_id':'WELL-0001'}]
     assert c.post('/api/chat',json=body).json()==answer
     assert model.calls==2
     assert len(c.get(f'/api/threads/{t}/messages',params={'user_id':'A'}).json()['messages'])==2
     assert c.get(f'/api/threads/{t}/messages',params={'user_id':'B'}).status_code == 404
-    rid=answer['components'][0]['result_id']
+    rid=next(iter(answer['results']))
     assert c.get(f'/api/results/{rid}',params={'user_id':'B'}).status_code == 404
     assert c.get(f'/api/evidence/{rid}',params={'user_id':'B'}).status_code == 404
     assert c.get(f'/api/results/{rid}',params={'user_id':'A'}).status_code == 200

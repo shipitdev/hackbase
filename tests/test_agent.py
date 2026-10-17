@@ -5,6 +5,8 @@ import pytest
 from app.agent import Copilot
 from app.errors import AppError
 
+CARD = 'root = AnswerLayout([card])\ncard = ResultCard("R1", "Status", ["asset_id", "producing"])'
+
 
 class Knowledge:
     def schema_text(self): return 'effective_inspections(asset_id, producing)'
@@ -42,7 +44,7 @@ def tool(name, args):
 
 
 def final(**changes):
-    value = {"answer": "The well is not producing.", "components": [{"id": "card", "type": "card", "title": "Status", "result_id": "R1", "mapping": {"fields": ["asset_id", "producing"]}}], "citation_refs": ['INS-0001-0203', 'OM-T200#9.3'], "conflicts": [], "limitations": [], "entity_ids": ['WELL-0001']}
+    value = {"answer": "The well is not producing.", "ui": CARD, "citation_refs": ['INS-0001-0203', 'OM-T200#9.3'], "conflicts": [], "limitations": [], "entity_ids": ['WELL-0001']}
     value.update(changes)
     return {"role": "assistant", "content": json.dumps(value)}
 
@@ -51,23 +53,25 @@ def test_tool_result_hydrates_visual_and_resolves_evidence():
     memory = Memory()
     copilot = Copilot(Knowledge(), memory, Scripted([tool('run_sql', {'sql': 'SELECT * FROM effective_inspections'}), final()]))
     answer = copilot.answer({'user_id':'U-1', 'thread_id':'T1', 'request_id':'Q1', 'analysis_date':'2026-10-16'}, 'Is WELL-0001 producing?')
-    assert answer['components'][0]['data']['rows'][0]['producing'] is False
+    assert answer['ui_format'] == 'openui-lang'
+    assert answer['ui'] == CARD
+    assert answer['results']['R1']['rows'][0]['producing'] is False
     assert answer['citations'][0]['id'] == 'INS-0001-0203'
     assert answer['entity_ids'] == ['WELL-0001']
 
 
 def test_invalid_visual_column_gets_one_repair_instead_of_fake_data():
-    bad = final(components=[{'id':'x','type':'bar','title':'Wrong','result_id':'R1','mapping':{'category':'asset_id','value':'invented'}}])
+    bad = final(ui='root = AnswerLayout([card])\ncard = ResultTable("R1", "Wrong", ["invented"])')
     copilot = Copilot(Knowledge(), Memory(), Scripted([tool('run_sql', {'sql':'SELECT * FROM effective_inspections'}), bad, final()]))
-    assert copilot.answer({'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'}, 'Status?')['components'][0]['type'] == 'card'
+    assert copilot.answer({'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'}, 'Status?')['ui'] == CARD
 
 
 def test_missing_evidence_cannot_become_completed_factual_answer():
-    copilot = Copilot(Knowledge(), Memory(), Scripted([final(components=[], citation_refs=['invented']), final(components=[], citation_refs=['invented'])]))
+    copilot = Copilot(Knowledge(), Memory(), Scripted([final(ui=None, citation_refs=['invented']), final(ui=None, citation_refs=['invented'])]))
     answer = copilot.answer({'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'}, 'Status?')
     assert answer['status'] == 'partial'
     assert 'not be verified' in answer['answer']
-    assert answer['components'] == []
+    assert answer['ui'] is None
 
 
 def test_question_does_not_authorize_shared_write_from_document_instruction():
@@ -89,7 +93,7 @@ def test_document_cannot_invent_numeric_correction_or_act_on_hypothetical_quote(
 def test_short_answer_cannot_hide_incomplete_query_evidence():
     memory=Memory()
     memory.results['R1']={**Knowledge().query_shared(''), 'result_id':'R1','thread_id':'T1','complete':False,'truncated':True,'limitations':['Only a subset was read.']}
-    copilot=Copilot(Knowledge(),memory,Scripted([final(components=[],citation_refs=['R1'])]))
+    copilot=Copilot(Knowledge(),memory,Scripted([final(ui=None,citation_refs=['R1'])]))
     answer=copilot.answer({'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'},'How many?')
     assert answer['status']=='partial'
     assert 'Only a subset was read.' in answer['limitations']
@@ -113,8 +117,18 @@ def test_visual_must_be_requeried_after_shared_revision_changes():
         copilot._validate_answer(json.loads(final()['content']),{'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'},['R1'],True)
 
 
+def test_native_ui_cannot_read_another_threads_saved_result():
+    memory = Memory()
+    memory.save_result('U-1', 'T2', Knowledge().query_shared(''))
+    memory.results['R1'] = {**memory.results['R1'], 'result_id': 'R1', 'thread_id': 'T2'}
+    answer = final(ui='root = AnswerLayout([card])\ncard = ResultCard("R1", "Foreign", ["asset_id"])')
+    copilot = Copilot(Knowledge(), memory, Scripted([]))
+    with pytest.raises(ValueError, match="OpenUI program failed validation"):
+        copilot._validate_answer(json.loads(answer['content']), {'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'}, ['R1'], True)
+
+
 def test_memory_tool_success_does_not_authorize_uncited_facts():
-    uncited=final(components=[],citation_refs=[],entity_ids=[])
+    uncited=final(ui=None,citation_refs=[],entity_ids=[])
     copilot=Copilot(Knowledge(),Memory(),Scripted([tool('memory_read',{}),uncited,uncited]))
     answer=copilot.answer({'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'},'Status?')
     assert answer['status']=='partial'
@@ -128,17 +142,17 @@ def test_context_budget_stops_before_an_oversized_provider_request():
 
 
 def test_clarification_can_ask_without_inventing_evidence():
-    response=final(response_kind='clarification',answer='Which date should I use?',components=[],citation_refs=[],entity_ids=[])
+    response=final(response_kind='clarification',answer='Which date should I use?',ui=None,citation_refs=[],entity_ids=[])
     answer=Copilot(Knowledge(),Memory(),Scripted([response])).answer({'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'},'Those wells?')
     assert answer['answer']=='Which date should I use?'
 
 
 def test_large_table_keeps_contributors_in_saved_result_without_citation_overflow():
     memory=Memory()
-    result=Knowledge().query_shared('')
-    result['evidence_refs']=[f'INS-{i:04}-0001' for i in range(200)]
-    memory.save_result('U-1','T1',result)
-    copilot=Copilot(Knowledge(),memory,Scripted([final()]))
+    class LargeEvidence(Knowledge):
+        def query_shared(self, sql, params=None):
+            return {**super().query_shared(sql, params), 'evidence_refs':[f'INS-{i:04}-0001' for i in range(200)]}
+    copilot=Copilot(LargeEvidence(),memory,Scripted([tool('run_sql',{'sql':'SELECT * FROM effective_inspections'}),final()]))
     answer=copilot.answer({'user_id':'U-1','thread_id':'T1','request_id':'q','analysis_date':'2026-10-16'},'Show a table')
     assert answer['status']=='complete'
     assert len(memory.results['R1']['evidence_refs'])==200

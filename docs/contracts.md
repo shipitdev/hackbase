@@ -1,6 +1,6 @@
 # Shared contracts — agree before parallel work
 
-Status: backend version 1 implemented; frontend pending. Sol owns this file and the code equivalents. A necessary change is reported to Sol, applied once and sent to all affected workers.
+Status: native OpenUI v2 implemented for the Card/Table chat prototype; historical v1 answers remain readable. Sol owns this file and the code equivalents. A necessary change is reported to Sol, applied once and sent to all affected workers.
 
 The backend endpoints/classes exist. Exact Python methods are in tasks/briefs/backend-interfaces.md. Keep Python and TypeScript definitions consistent. Do not treat this document as a reason to build unused helpers.
 
@@ -19,7 +19,7 @@ The backend endpoints/classes exist. Exact Python methods are in tasks/briefs/ba
 
 User selection is a demo convention. Server checks ownership consistently but this is not authenticated multi-tenant security. User IDs in HTTP input are not model-controlled tool arguments. Conversation-date overrides belong in test fixtures, not model parameters.
 
-## Completed answer
+## Historical v1 completed answer
 
 Required fields: `request_id`, `thread_id`, `message_id`, `analysis_date`, `status`, `answer`, `components`, `citations`, `conflicts`, `limitations`.
 
@@ -55,7 +55,7 @@ Actual factual answers require populated supporting citations; the example illus
 
 Model output contains component descriptions and reference IDs; the server resolves/validates them and never trusts copied row values.
 
-## Component mappings
+## Historical v1 component mappings
 
 | Type | Required mapping | Display expectation |
 |---|---|---|
@@ -116,6 +116,14 @@ Use a separate connection opened read-only against the shared DB, with query-onl
 
 Sol freezes the small required built-in function allowlist with the store implementation (aggregates, date/string helpers and window functions actually used). Check rejected writes/attachment/extension calls and direct raw/private access, as well as a legitimate query through an approved view. Return safe diagnostics so the model can repair a mistaken column/query without weakening this boundary.
 
-## Planned native OpenUI revision
+## Native OpenUI revision
 
-The implemented v1 still uses the component list above. The user chose model-generated OpenUI Lang for the frontend. Proposed UI fields and validation are in [the OpenUI plan](05-frontend-openui.md). Freeze v2 only after the package/parser/renderer compatibility check passes; do not claim the existing endpoints already emit native OpenUI.
+New answers use the frozen contract below; existing historical v1 responses keep their original values and format. Implementation order and remaining visual types are in [the OpenUI plan](05-frontend-openui.md).
+
+## Native OpenUI v2 — frozen prototype contract (17 October 2026)
+
+New live answers use `ui_format: "openui-lang"`, `ui_version: 1`, `ui: string | null`, and `results: Record<result_id, SavedResult>`. All existing metadata/citations/conflicts/limitations remain. New model drafts supply `ui` instead of `components`; no parallel model-authored component manifest. Empty visuals use null. Historical v1 responses keep their components, are labeled historical and are not rewritten. The first prototype supports the proven ResultCard/ResultTable library; the other four views remain a subsequent slice.
+
+The official Node parser validates the program and returns literal view descriptors internally for existing server checks. Result IDs must belong to this user AND thread, match current knowledge revision, and selected fields must exist. Return only referenced saved results; retain their full column metadata and completeness/revision fields. UI bindings adapt metadata columns to names in the browser. Use the generated library prompt, one repair and existing total budgets. Fail closed on parser process failure. Citation shape remains the existing resolved evidence objects; source buttons use `reference` (or source record id as provided) through the evidence API.
+
+Browser uses same-origin `/api` via Vite proxy to localhost:8000. No client key, parallel memory store, or automatic provider retries. Retry a failed chat with the same request_id and text. Switching users clears all rendered private state immediately and ignores stale responses. Historical component data can be shown in an explicitly historical table without synthesizing native programs.

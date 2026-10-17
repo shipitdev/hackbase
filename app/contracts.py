@@ -26,14 +26,6 @@ class ChatRequest(ThreadRequest):
         return value
 
 
-class Component(StrictModel):
-    id: str = Field(min_length=1, max_length=100)
-    type: Literal["card", "table", "line", "bar", "map", "heatmap"]
-    title: str = Field(min_length=1, max_length=300)
-    result_id: str = Field(min_length=1, max_length=100)
-    mapping: dict
-
-
 class Conflict(StrictModel):
     claim: str = Field(min_length=1, max_length=2000)
     evidence_refs: list[str] = Field(default_factory=list, max_length=30)
@@ -43,7 +35,7 @@ class Conflict(StrictModel):
 class AnswerDraft(StrictModel):
     response_kind: Literal["factual", "clarification"] = "factual"
     answer: str = Field(min_length=1, max_length=20000)
-    components: list[Component] = Field(default_factory=list, max_length=6)
+    ui: str | None = Field(..., max_length=20000)
     citation_refs: list[str] = Field(default_factory=list, max_length=100)
     conflicts: list[Conflict] = Field(default_factory=list, max_length=20)
     limitations: list[str] = Field(default_factory=list, max_length=30)

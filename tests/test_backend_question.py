@@ -27,7 +27,7 @@ class ScriptedProvider:
         row = result["rows"][0]
         return {"message": {"content": json.dumps({
             "answer": f"WELL-0001 is {'producing' if row['producing'] else 'not producing'} based on its latest inspection and T200 rule. Jake's planned shut-in note is relevant.",
-            "components": [{"id": "status", "type": "card", "title": "Latest inspection", "result_id": result["result_id"], "mapping": {"fields": ["asset_id", "inspection_id", "inspected_at", "wellhead_temp_c", "ambient_temp_c", "production_threshold_c", "producing"]}}],
+            "ui": 'root = AnswerLayout([status])\nstatus = ResultCard(' + json.dumps(result["result_id"]) + ', "Latest inspection", ["asset_id", "inspection_id", "inspected_at", "wellhead_temp_c", "ambient_temp_c", "production_threshold_c", "producing"])',
             "citation_refs": [row["inspection_id"], "OM-T200#9.3", "CTX-0001-003"],
             "entity_ids": ["WELL-0001"],
         })}, "model": self.model, "usage": {"total_tokens": 12}}

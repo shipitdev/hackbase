@@ -1,8 +1,8 @@
 # Build checklist
 
-Backend implementation is underway; frontend and end-to-end model/browser acceptance remain pending. Only the Sol orchestrator ticks a task after reviewing the changes and checking its behavior. [Timing](plan.md) · [Design](../docs/strategy.md) · [Expected answers](../docs/03-questions.md).
+Backend and native OpenUI Card/Table chat prototype are implemented; full six-view and scenario acceptance remains pending. Only the Sol orchestrator ticks a task after reviewing the changes and checking its behavior. [Timing](plan.md) · [Design](../docs/strategy.md) · [Expected answers](../docs/03-questions.md).
 
-Suggested filenames below describe the full build. The backend exists in app/; frontend work has not started. Keep each worker packet to a few owned files. A task can involve several lanes, but filenames are not permission for simultaneous edits. Read [AGENTS.md](../AGENTS.md), [contracts](../docs/contracts.md) and [ownership rules](../docs/orchestration.md) before dispatch.
+Suggested filenames below describe the full build. The backend exists in app/; the chat prototype exists in frontend/. Keep each worker packet to a few owned files. A task can involve several lanes, but filenames are not permission for simultaneous edits. Read [AGENTS.md](../AGENTS.md), [contracts](../docs/contracts.md) and [ownership rules](../docs/orchestration.md) before dispatch.
 
 Before T1, Sol records the contract revision, assignments and next action in [state](state.md). Workers use [briefs](brief-template.md), return [reports](report-template.md), and leave the main checklist to Sol.
 
@@ -18,9 +18,9 @@ Before T1, Sol records the contract revision, assignments and next action in [st
 
 **Needs:** T1. **Likely files:** `app/load.py`, `app/store.py`, `app/agent.py`, `frontend/src/App.tsx`, `tests/test_domain.py`.
 
-- [ ] Load the records/rules, keep originals, apply source false-spill corrections and answer Q1 with a status card and clickable sources.
+- [x] Load the records/rules, keep originals, apply source false-spill corrections and answer Q1 with a status card and clickable sources.
 - [x] Restrict query tools: no writes, attached databases, private chats or arbitrary file reads. Return reusable result references for UI components.
-- [ ] Check: load counts, exact temperature thresholds, latest inspection, Q1 in the browser and its inspection/manual/note links.
+- [x] Check: load counts, exact temperature thresholds, latest inspection, Q1 in the browser and its inspection/manual/note links (native Card/Table, pass_with_limitations; 64-second successful retry).
 
 **Minute 30 checkpoint:** one real question works from model to tools to UI, without a special route for its wording/ID.
 

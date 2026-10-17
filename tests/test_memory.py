@@ -81,7 +81,7 @@ def test_only_answer_results_contribute_well_ids(tmp_path):
     current = store.save_result("michael", thread_id, second)
     store.finish_request("michael", thread_id, "r2", {
         "answer": "second", "entity_ids": ["WELL-2000"],
-        "components": [{"result_id": current["result_id"]}],
+        "ui_format": "openui-lang", "results": {current["result_id"]: current},
     })
 
     latest = store.messages("michael", thread_id)[-1]
@@ -130,3 +130,18 @@ def test_private_message_citations_are_owner_scoped(tmp_path):
     assert memory.get_message('U-1',message['message_id'])['content']['text']=='Earlier discussion'
     with pytest.raises(AppError):
         memory.get_message('U-2',message['message_id'])
+
+
+def test_native_answer_cannot_attach_another_users_result(tmp_path):
+    store = MemoryStore(tmp_path / "memory.sqlite")
+    owner_thread = store.create_thread("michael")["thread_id"]
+    foreign_thread = store.create_thread("jake")["thread_id"]
+    foreign = store.save_result("jake", foreign_thread, shared_rows())
+    store.start_request("michael", owner_thread, "native-foreign", "Show a well")
+    with pytest.raises(AppError) as exc:
+        store.finish_request("michael", owner_thread, "native-foreign", {
+            "answer": "Untrusted attachment", "ui_format": "openui-lang",
+            "results": {foreign["result_id"]: foreign},
+        })
+    assert exc.value.code == "not_found"
+    assert [m["role"] for m in store.messages("michael", owner_thread)] == ["user"]

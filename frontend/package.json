@@ -1,9 +1,12 @@
 {
-  "name": "asset-intelligence-frontend-spike",
+  "name": "asset-intelligence-frontend",
   "private": true,
   "type": "module",
   "scripts": {
-    "check:openui": "node --import tsx scripts/check-openui.tsx"
+    "check:openui": "node --import tsx scripts/check-openui.tsx",
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {
     "@openuidev/react-lang": "1.0.1",
@@ -13,7 +16,12 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
-    "tsx": "4.23.15"
+    "@types/node": "26.6.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vite": "8.3.4"
   },
   "overrides": {
     "katex": "0.18.2"

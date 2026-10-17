@@ -11,3 +11,8 @@ opencode/
 node_modules/
 dist/
 .vite/
+
+# Local design skills and visual inspection artifacts
+.agents/
+.taste-skill/
+.playwright-mcp/

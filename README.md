@@ -1,6 +1,6 @@
-# Asset Intelligence Copilot backend
+# Asset Intelligence Copilot
 
-Python/FastAPI backend for the FlytBase asset-intelligence challenge. It loads the real sample data, runs restricted analytics tools, keeps shared corrections separate from private chats, and returns source-backed answers with generated component descriptions. The frontend is a later phase.
+Python/FastAPI backend for the FlytBase asset-intelligence challenge. It loads the real sample data, runs restricted analytics tools, keeps shared corrections separate from private chats, and returns source-backed answers with model-generated OpenUI cards and tables. The React chat prototype uses the same private history and evidence APIs.
 
 ## Run locally
 
@@ -12,6 +12,17 @@ python3 -m venv .venv
 .venv/bin/python -m app.load dataset/sample-data --db data/knowledge.sqlite
 .venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
+
+In another terminal, install the frontend dependencies (Node 22.12+), then start the chat:
+
+```sh
+npm --prefix frontend ci
+npm --prefix frontend run dev
+```
+
+Open [the chat](http://127.0.0.1:5173), select a dataset user and start a new chat. Keep both terminals running. Source links open evidence in the side panel. Chat history is stored on the backend; switching users clears the previous user's visible conversation. The calculation date is 17 October 2026.
+
+The native OpenUI validator also needs Node and the installed frontend dependencies when the backend answers a question. No browser API key is needed. Vite proxies `/api` to the local backend; neither server needs public exposure.
 
 Open [API documentation](http://127.0.0.1:8000/docs) or `/api/health`. Loading the dataset does not need a model key. The server reports `ready` for data availability and `chat_ready` separately for provider configuration.
 
@@ -32,7 +43,7 @@ Missing credentials produce an explicit error. Automated tests use scripted mode
 1. `GET /api/users` → select a dataset user ID.
 2. `POST /api/threads` with `{"user_id":"U-201"}` → get a thread ID.
 3. `POST /api/chat` with `request_id`, `user_id`, `thread_id`, `text`.
-4. Inspect returned `answer`, `components`, `citations`, `conflicts` and `limitations`. Components contain exact stored result rows; the model only describes presentation.
+4. Inspect returned `answer`, `ui`, `results`, `citations`, `conflicts` and `limitations`. The model writes the native OpenUI program; `results` contains only server-saved data. Old saved responses retain their original component format.
 5. Use `/api/threads/{id}/messages?user_id=...`, `/api/results/{id}?user_id=...` or `/api/evidence/{id}?user_id=...` for saved detail. URL-encode a source section's `#` as `%23`.
 
 Reuse a request ID only to retry the **same** text/user/thread. Completed requests return their saved answer; mismatched IDs and overlapping requests are rejected. A retry does not duplicate saved turns or a shared change.
@@ -56,6 +67,10 @@ npm --prefix frontend ci
 npm --prefix frontend run check:openui
 ```
 
-This checks native OpenUI parsing, result-backed Card/Table widgets, schema/prompt drift, rejected dynamic programs, and ReactDOM server rendering. It is not a complete browser app yet. See the [native OpenUI plan](docs/05-frontend-openui.md). Dependencies are pinned; a targeted KaTeX override fixes the reported low-severity audit chain.
+This checks native OpenUI parsing, result-backed Card/Table widgets, schema/prompt drift, rejected dynamic programs, and ReactDOM server rendering. The chat prototype supports these two views; line/bar/map/heatmap remain the next slice. See the [native OpenUI plan](docs/05-frontend-openui.md). Dependencies are pinned; a targeted KaTeX override fixes the reported low-severity audit chain.
 
 The opt-in real backend check is `python3 scripts/check_backend_question.py`. It can report `pass_with_limitations` when the answer's data and sources pass but observation/provenance caveats remain. It uses the configured paid provider and isolated temporary state.
+
+Build the browser bundle with `npm --prefix frontend run build`. This creates `frontend/dist`; it does not deploy the application. `npm --prefix frontend run preview` previews that build with the local API proxy. Streaming and the remaining four data displays are not implemented in this prototype.
+
+The user-requested [taste-skill](https://github.com/Leonxlnx/taste-skill) bundle is installed locally under `.agents/skills/` (ignored). Its original frontend design guidance informs the app's typography, spacing, states and responsive layout; no marketing-page animations or additional UI framework were added. `skills-lock.json` records the source for reinstalling with `npx skills add Leonxlnx/taste-skill`.

@@ -123,7 +123,7 @@ export const openuiPromptOptions = {
   additionalRules: [
     "Use only ResultCard and ResultTable inside AnswerLayout.",
     "Never invent row values, result IDs, or columns.",
-    "Do not use Query, Mutation, functions, actions, variables, or dynamic expressions.",
+    "Do not use Query, Mutation, functions, actions, reactive state, or dynamic expressions. Static component references are allowed.",
   ],
   examples: [
     'root = AnswerLayout([status, detail])\nstatus = ResultCard("R1", "Latest status", ["asset_id", "producing"])\ndetail = ResultTable("R1", "Inspection detail", ["asset_id", "wellhead_temp_c"])',

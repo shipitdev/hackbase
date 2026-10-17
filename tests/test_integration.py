@@ -17,7 +17,7 @@ class SampleModel:
             return {'message':{'tool_calls':[{'id':'latest','type':'function','function':{'name':'run_sql','arguments':json.dumps({'sql':'SELECT inspection_id, asset_id, producing FROM latest_inspections WHERE asset_id = ?', 'params':['WELL-0001']})}}]}}
         result=json.loads(messages[-1]['content'])
         row=result['rows'][0]
-        return {'message':{'content':json.dumps({'answer':f"WELL-0001 producing: {row['producing']}",'components':[{'id':'status','type':'card','title':'Latest inspection','result_id':result['result_id'],'mapping':{'fields':['asset_id','producing']}}],'citation_refs':[row['inspection_id'],'OM-T200#9.3'],'entity_ids':['WELL-0001']})}}
+        return {'message':{'content':json.dumps({'answer':f"WELL-0001 producing: {row['producing']}",'ui':'root = AnswerLayout([status])\nstatus = ResultCard('+json.dumps(result['result_id'])+', "Latest inspection", ["asset_id","producing"])','citation_refs':[row['inspection_id'],'OM-T200#9.3'],'entity_ids':['WELL-0001']})}}
 
 
 def test_real_sample_http_query_sources_and_private_recall(tmp_path):
@@ -35,7 +35,7 @@ def test_real_sample_http_query_sources_and_private_recall(tmp_path):
         assert answer['analysis_date']=='2026-10-17'
         assert answer['status']=='complete',answer
         expected=knowledge.query_shared("SELECT producing FROM latest_inspections WHERE asset_id='WELL-0001'")['rows'][0]['producing']
-        assert answer['components'][0]['data']['rows'][0]['producing']==expected
+        assert next(iter(answer['results'].values()))['rows'][0]['producing']==expected
         for citation in answer['citations']:
             assert client.get('/api/evidence/'+citation['id'].replace('#','%23'),params={'user_id':owner}).status_code==200
         new_thread=client.post('/api/threads',json={'user_id':owner}).json()['thread_id']

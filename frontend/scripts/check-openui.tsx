@@ -40,7 +40,7 @@ const parsed = validateProgram(valid, results);
 assert.equal(parsed.root?.typeName, "AnswerLayout");
 
 function rejected(program: string, why: string) {
-  assert.throws(() => validateProgram(program, results), undefined, why);
+  assert.throws(() => validateProgram(program, results), why);
 }
 
 rejected(
