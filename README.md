@@ -19,19 +19,13 @@ If the dataset is absent, obtain the [official dataset repository](https://githu
 
 ## Runtime model
 
-Set these environment variables **before starting the server**. `.env.example` lists the settings; `.env` files are not read automatically.
+DigitalOcean serverless inference is the current setup. Copy `.env.example` to `.env` if it is absent, then paste your **model access key** into `GRADIENT_MODEL_ACCESS_KEY`. Do not paste it into chat or commit it. The backend automatically reads this project's `.env`; existing shell settings take precedence. Restart the server after changing the file.
 
-```sh
-export LLM_BASE_URL=https://openrouter.ai/api/v1
-export LLM_MODEL=google/gemma-4-26b-a4b-it:free
-# Set LLM_API_KEY securely in your shell, then start uvicorn.
-```
+The endpoint is `https://inference.do-ai.run/v1`. The provider uses OpenAI-compatible **Chat Completions** with function tools. See [DigitalOcean setup and budget](docs/digitalocean.md) for the selected model, pricing sources and inexpensive connectivity test. A generic `LLM_API_KEY` is also supported.
 
-`OPENROUTER_API_KEY` is also accepted. OpenRouter currently lists this [Gemma free model](https://openrouter.ai/google/gemma-4-26b-a4b-it:free) with tool support; availability and account limits can change. A free endpoint still requires an account/key. No paid fallback is selected automatically.
+Other providers remain configurable through `LLM_BASE_URL`, `LLM_MODEL`, and `LLM_API_KEY`. OpenRouter also accepts `OPENROUTER_API_KEY`. For local Ollama, use `http://127.0.0.1:11434/v1` and an installed tool-capable model; loopback providers need no key. OpenCode editor access alone does not configure backend model access.
 
-For local Ollama, set `LLM_BASE_URL=http://127.0.0.1:11434/v1` and `LLM_MODEL` to an installed tool-capable model; no key is required for loopback providers. The adapter uses OpenAI-compatible **Chat Completions**. This is not a Responses API adapter; choose a model/provider supporting tool calls on that endpoint. OpenCode editor access alone does not configure backend model access.
-
-The backend returns an explicit provider error when credentials are missing. It does not substitute canned answers. Automated tests use a scripted model/HTTP transport for repeatability; they do not demonstrate live model answer quality.
+Missing credentials produce an explicit error. Automated tests use scripted models/HTTP transports; they do not establish live model answer quality. No automatic provider fallback or retry loop spends extra credits.
 
 ## API flow
 

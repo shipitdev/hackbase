@@ -11,26 +11,31 @@ class CompatibleProvider:
     def __init__(self, model=None, base_url=None, api_key=None, *, transport=None):
         self.model = model or os.getenv("LLM_MODEL", "google/gemma-4-26b-a4b-it:free")
         self.base_url = (base_url or os.getenv("LLM_BASE_URL", "https://openrouter.ai/api/v1")).rstrip("/")
-        self.api_key = api_key if api_key is not None else os.getenv("LLM_API_KEY", os.getenv("OPENROUTER_API_KEY", ""))
         self.transport = transport
         url = urlparse(self.base_url)
         if url.scheme not in {"http", "https"} or not url.hostname or url.username or url.password or url.query or url.fragment:
             raise AppError("invalid_request", "LLM_BASE_URL must be an HTTP(S) API base URL without credentials/query parameters.")
+        do_endpoint = url.hostname == "inference.do-ai.run"
+        self.api_key = api_key if api_key is not None else (
+            os.getenv("LLM_API_KEY") or
+            (os.getenv("GRADIENT_MODEL_ACCESS_KEY", "") if do_endpoint else os.getenv("OPENROUTER_API_KEY", ""))
+        )
         self.local = url.hostname in {"localhost", "127.0.0.1", "::1"}
+        self.digitalocean = do_endpoint
 
     @property
     def configured(self):
         return bool(self.model and (self.api_key or self.local))
 
-    def complete(self, messages, tools, *, timeout=45.0):
+    def complete(self, messages, tools, *, timeout=45.0, max_tokens=4096):
         if not self.configured:
-            raise AppError("provider_error", "Set LLM_API_KEY (or OPENROUTER_API_KEY), or configure a local provider. No API key is configured.", 503)
+            raise AppError("provider_error", "No API key is configured. Set GRADIENT_MODEL_ACCESS_KEY for DigitalOcean, LLM_API_KEY, or the provider-specific key.", 503)
         headers = {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
         try:
             with httpx.Client(transport=self.transport, timeout=httpx.Timeout(timeout, connect=min(timeout, 10))) as client:
-                response = client.post(f"{self.base_url}/chat/completions", headers=headers, json={
-                    "model": self.model, "messages": messages, "tools": tools, "stream": False, "max_tokens": 4096,
-                })
+                payload = {"model": self.model, "messages": messages, "tools": tools, "stream": False}
+                payload["max_completion_tokens" if self.digitalocean else "max_tokens"] = max_tokens
+                response = client.post(f"{self.base_url}/chat/completions", headers=headers, json=payload)
                 response.raise_for_status()
                 data = response.json()
             message = data["choices"][0]["message"]

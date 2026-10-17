@@ -8,6 +8,7 @@ from fastapi import FastAPI, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from dotenv import load_dotenv
 
 from app.agent import Copilot
 from app.contracts import ChatRequest, ThreadRequest
@@ -17,6 +18,7 @@ from app.provider import CompatibleProvider
 
 LOGGER = logging.getLogger(__name__)
 ROOT = Path(__file__).resolve().parent.parent
+load_dotenv(ROOT / ".env", override=False, interpolate=False)
 
 
 def create_app(*, knowledge=None, knowledge_path=None, memory_path=None, provider=None, analysis_date=None):

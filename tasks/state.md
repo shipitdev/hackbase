@@ -24,7 +24,7 @@ The current GPT-6.1 Sol session is the sole orchestrator. Delegate bounded imple
 - Calculation date 2026-10-16; separate conversation/plan dates.
 - Existing original research and dataset remain unchanged.
 - Backend contract v1 is implemented; concrete classes/methods are in tasks/briefs/backend-interfaces.md.
-- Runtime adapter: configurable Chat Completions. Default OpenRouter Gemma free; local Ollama supported. No live provider key is configured.
+- Runtime adapter: configurable Chat Completions. User switched preference to DigitalOcean serverless inference. Ignored .env created for GRADIENT_MODEL_ACCESS_KEY; configured model is Claude Haiku 5.5. Live tool check pending key. Other compatible endpoints remain supported.
 
 ## Active assignments
 
@@ -48,10 +48,13 @@ Backend implementation and checks: [integration report](reports/backend-integrat
 
 - Configure an API key or a local tool-capable model, then verify real model/tool behavior and all evaluation questions. Free provider availability/rate limits remain external constraints.
 - Actual test dataset overlap/conflicting-ID policy if needed.
-- Application Git repository creation was blocked by workspace .git permissions. No app commit exists; dataset remains a separate unchanged repository.
+- User authorized GitHub sync to shipitdev/hackbase. Baseline published via GitHub connector: c7c93e21bf5da10598fa5c69dc9d0725a17728c4. Local .git creation remains blocked. Dataset/research checkouts, runtime DBs and keys are excluded.
+- DigitalOcean integration accepted: B3 Luna high updated the existing HTTPX provider and a two-call smoke script. Sol fixed direct-script imports and tested the script with mocks. 32 relevant provider/smoke/API/agent/real-data integration checks pass. No repeated worker polling.
+- Default .env/.env.example now select anthropic-claude-5.5-haiku on inference.do-ai.run/v1. Official catalog confirms tools; pricing sources are in docs/digitalocean.md. User has $25 credits. This is not an app-enforced account spending cap; no auto fallback or HTTP retries.
+- Ignored .env is created mode 0600. Key field remains empty at final check; live smoke exited before network with a clear missing-key error. No inference credits spent by this integration.
 - This workspace rejects local socket binding. Uvicorn reached app startup; HTTP behavior is verified using TestClient. Run the README server command from a normal local shell.
 - Frontend/browser rendering, test-set release, complete model question evaluation and submission remain unimplemented/unverified.
 
 ## Next action
 
-Next phase: connect a live provider and build the frontend against docs/contracts.md. Keep six visual types, source inspection, user/thread switching and clear provider/partial-result errors. Follow exact file ownership and completion notifications. Do not rerun completed backend checks without a related change or unresolved risk.
+Next action: user pastes model access key into .env, then run python3 scripts/check_provider.py and one actual SQL/copilot question. After live provider acceptance, build the frontend against docs/contracts.md. Keep six visual types, source inspection, user/thread switching and clear provider/partial-result errors. Follow exact file ownership and completion notifications. Do not rerun completed backend checks without a related change or unresolved risk.
